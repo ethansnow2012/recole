@@ -1,0 +1,20 @@
+{
+  "name": "recoi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "test": "jest",
+    "build": "webpack"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^26.6.3",
+    "webpack-cli": "^4.4.0"
+  },
+  "dependencies": {
+    "path": "^0.12.7",
+    "webpack": "^5.19.0"
+  }
+}

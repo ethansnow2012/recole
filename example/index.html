@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../dist/recoi.js"></script>
+</head>
+<body>
+    <style>
+        table.calculator{
+            background-color: #FFFFFF;
+            margin: 0 auto;
+            margin-top: 20px;
+            margin-right: 10px;
+            margin-left: 10px;
+            margin-bottom: 40px;
+            border-radius: 10px;
+            background: #ececec;
+            padding: 20px 10px 23px 10px;
+
+        }
+
+        .calculator td{
+            width: 110px;
+            height: 60px;
+            text-align: center;
+            font-size: xx-large;
+
+        }
+        .calculator #screen{
+            text-align: right;
+            padding: 0 13%;
+        }
+        .calculator .orange{
+            color: #ff3300;
+        }
+
+        .calculator td:active{
+            background-color: #e0e0d1;
+            border-radius: 20px;
+        }
+    </style>
+    <table class="calculator">
+        <tbody>
+            <tr >
+                <td id="screen" colspan='3'>
+
+                </td>
+            </tr>
+            <tr class="orange">
+                <td class="reset">C</td>
+                <td class="operator" data-value="%">%</td>
+                <td class="operator" data-value="/">/</td>
+            </tr>
+            <tr class="orange">
+                <td class="operator" data-value="+">+</td>
+                <td class="operator" data-value="-">-</td>
+                <td class="operator" data-value="x">x</td>
+            </tr>
+            <tr>
+                    <td class="number" data-value="7">7</td>
+                    <td class="number" data-value="8">8</td>
+                    <td class="number" data-value="9">9</td>
+            </tr>
+            <tr>
+                <td class="number" data-value="4">4</td>
+                <td class="number" data-value="5">5</td>
+                <td class="number" data-value="6">6</td>
+            </tr>
+            <tr>
+                <td class="number" data-value="1">1</td>
+                <td class="number" data-value="2">2</td>
+                <td class="number" data-value="3">3</td>
+            </tr>
+            <tr>
+                <td class="dot">.</td>
+                <td class="number" data-value="3">0</td>
+                <td class="equal" >=</td>
+            </tr>	
+        </tbody>
+    </table>
+    <style>
+        .SnakeGame td{
+            width: 10px;
+            height: 10px;
+            background: #202124;
+        }
+        .SnakeGame td.active{
+            background: green;
+        }
+        .SnakeGame td.active2{
+            background: blue;
+        }
+        .SnakeGame-control tr {
+            color: #202124;
+            width: 22px;
+            height: 22px;
+        }
+        .SnakeGame-control td{
+            width: 30px;
+            height: 30px;
+        }
+        .SnakeGame-control #up,.SnakeGame-control #right,.SnakeGame-control #down,.SnakeGame-control #left{
+            cursor: pointer;
+        } 
+        .SnakeGame-control #up:hover,.SnakeGame-control #right:hover,.SnakeGame-control #down:hover,.SnakeGame-control #left:hover{
+            font-size: 1.2em;
+        }
+    </style>
+    <table class="SnakeGame">
+        <tbody>
+            <tr data-cord="0">
+                <td data-cord="0">
+
+                </td>
+                <td data-cord="1">
+
+                </td>
+                <td data-cord="2">
+
+                </td>
+                <td data-cord="3">
+
+                </td>
+                <td data-cord="4">
+
+                </td>
+                <td data-cord="5">
+
+                </td>
+                <td data-cord="6">
+
+                </td>
+            </tr>
+            <tr data-cord="1">
+                <td data-cord="0">
+
+                </td>
+                <td data-cord="1">
+
+                </td>
+                <td data-cord="2">
+
+                </td>
+                <td data-cord="3">
+
+                </td>
+                <td data-cord="4">
+
+                </td>
+                <td data-cord="5">
+
+                </td>
+                <td data-cord="6">
+
+                </td>
+            </tr>
+            <tr data-cord="2">
+                <td data-cord="0">
+
+                </td>
+                <td data-cord="1">
+
+                </td>
+                <td data-cord="2">
+
+                </td>
+                <td data-cord="3">
+
+                </td>
+                <td data-cord="4">
+
+                </td>
+                <td data-cord="5">
+
+                </td>
+                <td data-cord="6">
+
+                </td>
+            </tr>
+            <tr data-cord="3">
+                <td data-cord="0">
+
+                </td>
+                <td data-cord="1">
+
+                </td>
+                <td data-cord="2">
+
+                </td>
+                <td data-cord="3">
+
+                </td>
+                <td data-cord="4">
+
+                </td>
+                <td data-cord="5">
+
+                </td>
+                <td data-cord="6">
+
+                </td>
+            </tr>
+            <tr data-cord="4">
+                <td data-cord="0">
+
+                </td>
+                <td data-cord="1">
+
+                </td>
+                <td data-cord="2">
+
+                </td>
+                <td data-cord="3">
+
+                </td>
+                <td data-cord="4">
+
+                </td>
+                <td data-cord="5">
+
+                </td>
+                <td data-cord="6">
+
+                </td>
+            </tr>
+            <tr data-cord="5">
+                <td data-cord="0">
+
+                </td>
+                <td data-cord="1">
+
+                </td>
+                <td data-cord="2">
+
+                </td>
+                <td data-cord="3">
+
+                </td>
+                <td data-cord="4">
+
+                </td>
+                <td data-cord="5">
+
+                </td>
+                <td data-cord="6">
+
+                </td>
+            </tr>
+            <tr data-cord="6">
+                <td data-cord="0">
+
+                </td>
+                <td data-cord="1">
+
+                </td>
+                <td data-cord="2">
+
+                </td>
+                <td data-cord="3">
+
+                </td>
+                <td data-cord="4">
+
+                </td>
+                <td data-cord="5">
+
+                </td>
+                <td data-cord="6">
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="SnakeGame-control">
+        <tbody>
+            <tr >
+                <td></td>
+                <td id="up">↑</td>
+                <td></td>
+            </tr>
+            <tr >
+                <td id="left">←</td>
+                <td id="down">↓</td>
+                <td id="right">→</td>
+            </tr>
+        </tbody>
+    </table>
+    <script>
+        
+        var recoi = function(){
+            this.symbol_reactive = Symbol()
+            this._beforeMap = new WeakMap();
+            this.effMap = new WeakMap();
+            this.proxyMap = new WeakMap();
+            this.targetMap = new WeakMap(); // storing objects of type "object" not "proxy"
+            this.currentEffect = null;
+            console.log("init");
+        };
+        recoi.prototype.addBefore = function(target, before){
+            let set = this._beforeMap.get(target)// return object of type "Set"
+            if (!set) {
+                this._beforeMap.set(target, (set = new Set()))
+            }
+            set.add(before)
+        }
+        recoi.prototype.track = function(target, key,options={}) {
+            
+            target = this._2targetObj(target)
+            if (this.currentEffect) {
+                let depsMap = this.targetMap.get(target) // Get the current depsMap for this target
+                if (!depsMap) {
+                    // There is no map.
+                    this.targetMap.set(target, (depsMap = new Map())) // Crecoie one
+                }
+                let dep = depsMap.get(key) // Get the current dependencies (effects) that need to be run when this is set
+                if (!dep) {
+                    // There is no dependencies (effects)
+                    depsMap.set(key, (dep = new Set())) // Crecoie a new Set
+                }
+                if(options.before){
+                    this.addBefore(target, options.before)
+                }
+                this.effMap.set(this.currentEffect, this.currentEffect)
+                dep.add(this.currentEffect)
+            }
+        }
+        recoi.prototype.trigger_before = function(target, key) {
+            target = this._2targetObj(target)
+            //==
+            let beforeSet = this._beforeMap.get(target)
+            if(beforeSet){
+                beforeSet.forEach((eff)=>{
+                    eff()
+                })
+            }
+        }
+        recoi.prototype.trigger = function(target, key) {
+            
+            target = this._2targetObj(target)
+            //==
+            // let beforeSet = this._beforeMap.get(target)
+            // if(beforeSet){
+            //     beforeSet.forEach((eff)=>{
+            //         eff()
+            //     })
+            // }
+            //==
+            const depsMap = this.targetMap.get(target) // Does this object have any properties that have dependencies (effects)
+            if (!depsMap) {
+                return
+            }
+            let dep = depsMap.get(key) // If there are dependencies (effects) associated with this
+            if (dep) {
+                dep.forEach((eff) => {
+                    // run them all
+                    eff()
+                })
+            }
+        }
+
+        recoi.prototype.crecoieReactive = function (target)  {
+            let _this = this
+            const handler = {
+                
+                get(target, key, receiver) {
+                    let result = Reflect.get(target, key, receiver)
+                    _this.track(target, key) // If this reactive property (target) is GET inside then track the effect to rerun on SET
+                    return result
+                },
+                set(target, key, value, receiver) {
+                    let oldValue = target[key]
+                    if (oldValue != value) {
+                        _this.trigger_before(target, key) 
+                    }
+                    let result = Reflect.set(target, key, value, receiver)
+                    if (result && oldValue != value) {
+                        _this.trigger(target, key) // If this reactive property (target) has effects to rerun on SET, trigger them.
+                    }
+                    return result
+                },
+            }
+            let _proxy = new Proxy(target, handler)
+            let keys = Reflect.ownKeys(target)
+            keys.forEach((_key)=>{
+                let el =target[_key]
+                if(el 
+                   && typeof el == "object"
+                   && !Array.isArray(el)
+                ){
+                    _this.effect(()=>{
+                        _proxy[_key] = el.ref[el.key]//this.targetMap.get(el.ref)[el.key]
+                    })
+                }
+            })
+            this.proxyMap.set(_proxy,target)
+            return _proxy
+        }
+        recoi.prototype.effect = function (eff) {
+            this.currentEffect = eff // must be a function
+            this.currentEffect()
+            this.currentEffect = null
+            return eff
+        }
+        recoi.prototype.ref = function (init_value=0) {
+            let _this = this
+            let raw = init_value
+            let raw_old = init_value
+            const r = {  
+                get value() {
+                    _this.track(r, 'value')
+                    return raw 
+                },
+                set value(newVal) {
+                    if(raw == newVal){
+                        //raw_old = raw
+                        return;
+                    }
+                    //raw_old = raw
+                    raw = newVal
+                    _this.trigger(r, 'value')
+                },
+
+                // failed design 
+                getOld: ()=>{ 
+                    return raw_old 
+                },
+                setOld: ()=>{
+                    raw_old = raw
+                    return raw_old 
+                }
+                // failed design end
+            }
+            return r
+        }
+        recoi.prototype.computed = function (getter) {
+            let result = this.ref()
+            this.effect(() => (result.value = getter()))
+            return result
+        }
+        recoi.prototype.watch = function(target, eff, before){
+            //let _this = this
+
+            this.currentEffect = eff
+            
+            let keys = Reflect.ownKeys(target)
+            keys.forEach((_key)=>{
+                this.track(target,_key, before?{before:before}:{})
+            })
+            
+            this.currentEffect = null
+        }
+        recoi.prototype._2targetObj = function(target){
+            return this.proxyMap.get(target)?this.proxyMap.get(target):target
+        }
+
+        let recoi1 = new recoi()
+        
+        //demo test case 1:  calculator demo 
+        let calculatorState = recoi1.crecoieReactive({ 
+                operandA:0,
+                operandB:0,
+                operator:null,
+                procedureState:0
+            })
+        let screenStr = recoi1.computed(()=>{
+            console.log(calculatorState.procedureState)
+            let rtn = ""
+            if(calculatorState.procedureState==0){// expecting operandA
+                rtn = calculatorState.operandA
+            }else if(calculatorState.procedureState==1){ // expecting operandA floating number
+                rtn = calculatorState.operandA
+            }else if(calculatorState.procedureState==2){ // expecting operandB
+                rtn = calculatorState.operandA
+            }else if(calculatorState.procedureState==3){ // expecting operandA floating number
+                rtn = calculatorState.operandA
+            }else if(calculatorState.procedureState==4){
+                rtn = calculatorState.operandB
+            }else if(calculatorState.procedureState==5){
+                switch (calculatorState.operator) {
+                    case "+":
+                    rtn = (+calculatorState.operandA) + (+calculatorState.operandB)
+                    break;
+                    case "-":
+                    rtn = (+calculatorState.operandA) - (+calculatorState.operandB)
+                    break;
+                    case "x":
+                    rtn = (+calculatorState.operandA) * (+calculatorState.operandB)
+                    break;
+                    case "/":
+                    rtn = (+calculatorState.operandA) / (+calculatorState.operandB)
+                    break;
+                    case "%":
+                    rtn = (+calculatorState.operandA) % (+calculatorState.operandB)
+                    break;
+                }
+            }
+            return rtn
+        })
+        recoi1.watch(screenStr,()=>{
+            document.querySelector("#screen").innerHTML = screenStr.value
+        })
+        document.querySelectorAll(".calculator .number").forEach((el)=>{
+            el.addEventListener("click",()=>{
+                if(calculatorState.procedureState==0){
+                    calculatorState.operandA = el.dataset.value 
+                }else if(calculatorState.procedureState==1){
+                    
+                    calculatorState.operandA = calculatorState.operandA.toString() + el.dataset.value
+                }else if(calculatorState.procedureState==2){
+                    calculatorState.operandB = el.dataset.value 
+                    calculatorState.procedureState=4
+                }else if(calculatorState.procedureState==3){
+
+                }
+            })
+        })
+        document.querySelectorAll(".calculator .operator").forEach((el)=>{
+            el.addEventListener("click",()=>{
+                if(calculatorState.procedureState==0||calculatorState.procedureState==1){
+                    calculatorState.procedureState = 2
+                    calculatorState.operator = el.dataset.value 
+                }else if(calculatorState.procedureState==2){
+                    calculatorState.operator = el.dataset.value 
+                }
+            })
+        })
+        document.querySelector(".calculator .equal").addEventListener("click",(el)=>{
+            calculatorState.procedureState=5
+        })
+        document.querySelector(".calculator .dot").addEventListener("click",(el)=>{
+            if(calculatorState.procedureState==0){
+                calculatorState.operandA = calculatorState.operandA.toString() + "."
+                calculatorState.procedureState+=1
+            }else if(calculatorState.procedureState==2){
+                calculatorState.operandB = calculatorState.operandB.toString() + "."
+                calculatorState.procedureState+=1
+            }
+        })
+        document.querySelector(".calculator .reset").addEventListener("click",(el)=>{
+            calculatorState.operandA=0
+            calculatorState.operandB=0
+            calculatorState.procedureState=0
+        })
+        
+
+
+
+        //demo test case 2:  Snake demo 
+        console.log("demo test case 2")
+        let block1 = recoi1.crecoieReactive({x:1, y:4})
+        let block2 = recoi1.crecoieReactive({x:0, y:4})
+        let block3 = recoi1.crecoieReactive({x:0, y:3})
+        let block4 = recoi1.crecoieReactive({x:0, y:2})
+        
+        
+        let removeCurrent =function(block){
+            document
+                .querySelector(`.SnakeGame tr[data-cord='${block.y}']`)
+                .querySelector(`td[data-cord='${block.x}']`)
+                .classList.remove("active")
+        }
+        recoi1.watch(block1, 
+            ()=>{
+                document
+                    .querySelector(`.SnakeGame tr[data-cord='${block1.y}']`)
+                    .querySelector(`td[data-cord='${block1.x}']`)
+                    .classList.add("active")
+            },
+            ()=>{
+                removeCurrent(block1)
+                block2.x = block1.x
+                block2.y = block1.y
+            }
+        )
+        recoi1.watch(block2, 
+            ()=>{
+                document
+                    .querySelector(`.SnakeGame tr[data-cord='${block2.y}']`)
+                    .querySelector(`td[data-cord='${block2.x}']`)
+                    .classList.add("active")
+            },
+            ()=>{
+                removeCurrent(block2)
+                block3.x = block2.x
+                block3.y = block2.y
+            }
+        )
+        recoi1.watch(block3, ()=>{
+            document
+                .querySelector(`.SnakeGame tr[data-cord='${block3.y}']`)
+                .querySelector(`td[data-cord='${block3.x}']`)
+                .classList.add("active")
+            },
+            ()=>{
+                removeCurrent(block3)
+                block4.x = block3.x
+                block4.y = block3.y
+            }
+        )
+        recoi1.watch(block4, ()=>{
+            document
+                .querySelector(`.SnakeGame tr[data-cord='${block4.y}']`)
+                .querySelector(`td[data-cord='${block4.x}']`)
+                .classList.add("active")
+            },
+            ()=>{
+                removeCurrent(block4)
+            }
+        )
+        
+        document.querySelector(".SnakeGame-control #up").addEventListener("click", ()=>{
+            let vv = (block1.y - 1)%7
+            if (vv<0) vv+=7
+            block1.y = vv
+        })
+        document.querySelector(".SnakeGame-control #right").addEventListener("click", ()=>{ 
+            let vv = (block1.x + 1)%7
+            if (vv<0) vv+=7
+            block1.x = vv
+        })
+        document.querySelector(".SnakeGame-control #down").addEventListener("click", ()=>{
+            let vv = (block1.y + 1)%7
+            if (vv<0) vv+=7
+            block1.y = vv
+            
+        })
+        document.querySelector(".SnakeGame-control #left").addEventListener("click", ()=>{
+            let vv = (block1.x - 1)%7
+            if (vv<0) vv+=7
+            block1.x = vv
+            
+        })
+        
+        
+    </script>
+</body>
+</html>
