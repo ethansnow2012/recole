@@ -331,6 +331,7 @@
             //==
             let beforeSet = this._beforeMap.get(target)
             if(beforeSet){
+                
                 beforeSet.forEach((eff)=>{
                     eff()
                 })
@@ -360,7 +361,7 @@
             }
         }
 
-        recoi.prototype.crecoieReactive = function (target)  {
+        recoi.prototype.createReactive = function (target)  {
             let _this = this
             const handler = {
                 
@@ -458,7 +459,7 @@
         let recoi1 = new recoi()
         
         //demo test case 1:  calculator demo 
-        let calculatorState = recoi1.crecoieReactive({ 
+        let calculatorState = recoi1.createReactive({ 
                 operandA:0,
                 operandB:0,
                 operator:null,
@@ -549,10 +550,16 @@
 
         //demo test case 2:  Snake demo 
         console.log("demo test case 2")
-        let block1 = recoi1.crecoieReactive({x:1, y:4})
-        let block2 = recoi1.crecoieReactive({x:0, y:4})
-        let block3 = recoi1.crecoieReactive({x:0, y:3})
-        let block4 = recoi1.crecoieReactive({x:0, y:2})
+
+        let direction = recoi1.ref("")
+
+        let block1 = recoi1.createReactive({x:1, y:4})
+        let block2 = recoi1.createReactive({x:0, y:4})
+        let block3 = recoi1.createReactive({x:0, y:3})
+        let block4 = recoi1.createReactive({x:0, y:2})
+        let block5 = recoi1.createReactive({x:0, y:1})
+
+        let blockSet = new Set();
         
         
         let removeCurrent =function(block){
@@ -567,11 +574,24 @@
                     .querySelector(`.SnakeGame tr[data-cord='${block1.y}']`)
                     .querySelector(`td[data-cord='${block1.x}']`)
                     .classList.add("active")
+
+                if(Array.from(blockSet).map(x=>JSON.stringify(x)).indexOf(JSON.stringify({x:block1.x, y:block1.y})) != -1  ){ //check dead
+                    console.log("dead")
+                }
+                blockSet.clear()
             },
             ()=>{
+                console.log("move start")
+                
                 removeCurrent(block1)
+
+                
+                //blockSet.add({x: block1.x, y:block1.y})
+
                 block2.x = block1.x
                 block2.y = block1.y
+
+                
             }
         )
         recoi1.watch(block2, 
@@ -583,6 +603,9 @@
             },
             ()=>{
                 removeCurrent(block2)
+
+                blockSet.add({x: block2.x, y:block2.y})
+
                 block3.x = block2.x
                 block3.y = block2.y
             }
@@ -595,6 +618,9 @@
             },
             ()=>{
                 removeCurrent(block3)
+                
+                blockSet.add({x: block3.x, y:block3.y})
+
                 block4.x = block3.x
                 block4.y = block3.y
             }
@@ -607,30 +633,62 @@
             },
             ()=>{
                 removeCurrent(block4)
+
+                blockSet.add({x: block4.x, y:block4.y})
+
+                block5.x = block4.x
+                block5.y = block4.y
+            }
+        )
+        recoi1.watch(block5, ()=>{
+            document
+                .querySelector(`.SnakeGame tr[data-cord='${block5.y}']`)
+                .querySelector(`td[data-cord='${block5.x}']`)
+                .classList.add("active")
+            },
+            ()=>{
+                removeCurrent(block5)
+
+                blockSet.add({x: block5.x, y:block5.y})
+                console.log(blockSet)
             }
         )
         
         document.querySelector(".SnakeGame-control #up").addEventListener("click", ()=>{
+            if(direction.value == "down")return
+
             let vv = (block1.y - 1)%7
             if (vv<0) vv+=7
             block1.y = vv
+            
+            direction.value = "up"
         })
         document.querySelector(".SnakeGame-control #right").addEventListener("click", ()=>{ 
+            if(direction.value == "left")return
+
             let vv = (block1.x + 1)%7
             if (vv<0) vv+=7
             block1.x = vv
+
+            direction.value = "right"
         })
         document.querySelector(".SnakeGame-control #down").addEventListener("click", ()=>{
+            if(direction.value == "up")return
+
             let vv = (block1.y + 1)%7
             if (vv<0) vv+=7
             block1.y = vv
             
+            direction.value = "down"
         })
         document.querySelector(".SnakeGame-control #left").addEventListener("click", ()=>{
+            if(direction.value == "right")return
+
             let vv = (block1.x - 1)%7
             if (vv<0) vv+=7
             block1.x = vv
-            
+
+            direction.value = "left"
         })
         
         

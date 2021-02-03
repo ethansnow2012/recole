@@ -1,6 +1,6 @@
 var recoi = require("./src/recoi")
 let recoi1 = new recoi()
-let product = recoi1.crecoieReactive({ price: 5, quantity: 2 })
+let product = recoi1.createReactive({ price: 5, quantity: 2 })
 let salePrice
 let tempStr = ""
 let tempStr2 = ""
@@ -51,21 +51,21 @@ test("test case 5: watch on reactive obj",()=>{
     expect(tempStr).toBe(tempStr)
 })
 test("test case 6: reactive in reactive",()=>{
-    let product2 = recoi1.crecoieReactive({ price: {ref: product, key: "price"}, quantity: 2 }) // declare object that is reactive with other reactive object
+    let product2 = recoi1.createReactive({ price: {ref: product, key: "price"}, quantity: 2 }) // declare object that is reactive with other reactive object
     product.price = 11
     expect(product2.price).toBe(11)
     product.price = product.price * 2 
     expect(product2.price).toBe(22)
 })
 test("test case 7: reactive object working with other ref",()=>{
-    let product3 = recoi1.crecoieReactive({ price: {ref: salePrice, key: "value"}, quantity: 2 })
+    let product3 = recoi1.createReactive({ price: {ref: salePrice, key: "value"}, quantity: 2 })
     salePrice.value = 77
     expect(product3.price).toBe(77)
     salePrice.value += 11
     expect(product3.price).toBe(88)
 })
 test("test case 8: Array init test",()=>{
-    let array1 = recoi1.crecoieReactive({ theArray: [1,2,3,4,5]})
+    let array1 = recoi1.createReactive({ theArray: [1,2,3,4,5]})
     
     recoi1.watch(array1, ()=>{
         tempObj = array1.theArray
@@ -77,7 +77,7 @@ test("test case 9: Array init test 2",()=>{
     let array2_ref3 = recoi1.ref(3)
     let array2_ref4 = recoi1.ref(4)
     let array2_ref5 = recoi1.ref(5)
-    let array2 = recoi1.crecoieReactive({ theArray: 
+    let array2 = recoi1.createReactive({ theArray: 
                                         [
                                             {ref: recoi1.ref(1), key: "value"}
                                             ,{ref: recoi1.ref(2), key: "value"}

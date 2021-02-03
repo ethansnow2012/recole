@@ -69,7 +69,7 @@ recoi.prototype.trigger = function(target, key) {
     }
 }
 
-recoi.prototype.crecoieReactive = function (target)  {
+recoi.prototype.createReactive = function (target)  {
     let _this = this
     const handler = {
         
