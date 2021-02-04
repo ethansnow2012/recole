@@ -1,9 +1,10 @@
 var path = require('path');
 export default {
     //input: path.resolve(__dirname, 'src'),
-    input: "src/recoi.js",
+    input: "src/recole.js",
     output: {
-      file: './dist/recoi.min.js',
+      name:"recole",
+      file: './dist/recole.min.js',
       format: 'umd'
     }
   };

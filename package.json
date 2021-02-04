@@ -1,8 +1,8 @@
 {
-  "name": "recoi",
+  "name": "recole",
   "version": "1.0.2",
   "description": "",
-  "main": "dist/recoi.min.js",
+  "main": "dist/recole.min.js",
   "scripts": {
     "prebuild": "rimraf dist",
     "test": "jest",

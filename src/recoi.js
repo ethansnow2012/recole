@@ -1,4 +1,4 @@
-var recoi = function(){
+var recole = function(){
     this.symbol_reactive = Symbol()
     this._beforeMap = new WeakMap();
     this.effMap = new WeakMap();
@@ -7,26 +7,26 @@ var recoi = function(){
     this.currentEffect = null;
     console.log("init");
 };
-recoi.prototype.addBefore = function(target, before){
+recole.prototype.addBefore = function(target, before){
     let set = this._beforeMap.get(target)// return object of type "Set"
     if (!set) {
         this._beforeMap.set(target, (set = new Set()))
     }
     set.add(before)
 }
-recoi.prototype.track = function(target, key,options={}) {
+recole.prototype.track = function(target, key,options={}) {
     
     target = this._2targetObj(target)
     if (this.currentEffect) {
         let depsMap = this.targetMap.get(target) // Get the current depsMap for this target
         if (!depsMap) {
             // There is no map.
-            this.targetMap.set(target, (depsMap = new Map())) // Crecoie one
+            this.targetMap.set(target, (depsMap = new Map())) // Crecolee one
         }
         let dep = depsMap.get(key) // Get the current dependencies (effects) that need to be run when this is set
         if (!dep) {
             // There is no dependencies (effects)
-            depsMap.set(key, (dep = new Set())) // Crecoie a new Set
+            depsMap.set(key, (dep = new Set())) // Crecolee a new Set
         }
         if(options.before){
             this.addBefore(target, options.before)
@@ -35,7 +35,7 @@ recoi.prototype.track = function(target, key,options={}) {
         dep.add(this.currentEffect)
     }
 }
-recoi.prototype.trigger_before = function(target, key) {
+recole.prototype.trigger_before = function(target, key) {
     target = this._2targetObj(target)
     //==
     let beforeSet = this._beforeMap.get(target)
@@ -45,7 +45,7 @@ recoi.prototype.trigger_before = function(target, key) {
         })
     }
 }
-recoi.prototype.trigger = function(target, key) {
+recole.prototype.trigger = function(target, key) {
     
     target = this._2targetObj(target)
     //==
@@ -69,7 +69,7 @@ recoi.prototype.trigger = function(target, key) {
     }
 }
 
-recoi.prototype.createReactive = function (target)  {
+recole.prototype.createReactive = function (target)  {
     let _this = this
     const handler = {
         
@@ -106,13 +106,13 @@ recoi.prototype.createReactive = function (target)  {
     this.proxyMap.set(_proxy,target)
     return _proxy
 }
-recoi.prototype.effect = function (eff) {
+recole.prototype.effect = function (eff) {
     this.currentEffect = eff // must be a function
     this.currentEffect()
     this.currentEffect = null
     return eff
 }
-recoi.prototype.ref = function (init_value=0) {
+recole.prototype.ref = function (init_value=0) {
     let _this = this
     let raw = init_value
     let raw_old = init_value
@@ -143,12 +143,12 @@ recoi.prototype.ref = function (init_value=0) {
     }
     return r
 }
-recoi.prototype.computed = function (getter) {
+recole.prototype.computed = function (getter) {
     let result = this.ref()
     this.effect(() => (result.value = getter()))
     return result
 }
-recoi.prototype.watch = function(target, eff, before){
+recole.prototype.watch = function(target, eff, before){
     //let _this = this
 
     this.currentEffect = eff
@@ -160,8 +160,9 @@ recoi.prototype.watch = function(target, eff, before){
     
     this.currentEffect = null
 }
-recoi.prototype._2targetObj = function(target){
+recole.prototype._2targetObj = function(target){
     return this.proxyMap.get(target)?this.proxyMap.get(target):target
 }
 
-module.exports=recoi
+//module.exports=recole
+export default recole
