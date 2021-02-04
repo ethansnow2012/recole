@@ -1,7 +1,7 @@
 var recole = function(){
     this.symbol_reactive = Symbol()
     this._beforeMap = new WeakMap();
-    this.effMap = new WeakMap();
+    //this.effMap = new WeakMap();
     this.proxyMap = new WeakMap();
     this.targetMap = new WeakMap(); // storing objects of type "object" not "proxy"
     this.currentEffect = null;
@@ -31,10 +31,17 @@ recole.prototype.track = function(target, key,options={}) {
         if(options.before){
             this.addBefore(target, options.before)
         }
-        this.effMap.set(this.currentEffect, this.currentEffect)
+        //this.effMap.set(this.currentEffect, this.currentEffect)
         dep.add(this.currentEffect)
     }
 }
+recole.prototype.cancel = function(target){
+    target = this._2targetObj(target);
+    this._beforeMap.delete(target);
+    this.targetMap.delete(target);
+    
+}
+
 recole.prototype.trigger_before = function(target, key) {
     target = this._2targetObj(target)
     //==
@@ -48,13 +55,6 @@ recole.prototype.trigger_before = function(target, key) {
 recole.prototype.trigger = function(target, key) {
     
     target = this._2targetObj(target)
-    //==
-    // let beforeSet = this._beforeMap.get(target)
-    // if(beforeSet){
-    //     beforeSet.forEach((eff)=>{
-    //         eff()
-    //     })
-    // }
     //==
     const depsMap = this.targetMap.get(target) // Does this object have any properties that have dependencies (effects)
     if (!depsMap) {
@@ -164,5 +164,5 @@ recole.prototype._2targetObj = function(target){
     return this.proxyMap.get(target)?this.proxyMap.get(target):target
 }
 
-//module.exports=recole
+// module.exports=recole
 export default recole

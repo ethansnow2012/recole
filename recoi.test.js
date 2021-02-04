@@ -1,4 +1,6 @@
-var recole = require("./src/recole")
+var recole = require("./dist/recole.min.js")
+//import recole from "./dist/recole.min.js"
+
 let recole1 = new recole()
 let product = recole1.createReactive({ price: 5, quantity: 2 })
 let salePrice
@@ -116,4 +118,17 @@ test("test case 11: ref in ref in one declaration",()=>{
     })
     tc11_obj.value.inner.value = 'hello'
     expect(tempStr).toBe('hello')
+})
+test("test case 12: prototype.cancel",()=>{
+    let watchCount = 0
+    let aa = recole1.createReactive({ ccc:"ccc" })
+    recole1.watch(aa, ()=>{
+        watchCount++
+        console.log(aa.ccc)
+    })
+    aa.ccc = 'bbb'
+    recole1.cancel(aa)
+    aa.ccc = 'aaa'
+
+    expect(watchCount).toBe(1)
 })

@@ -1,11 +1,13 @@
 {
   "name": "recole",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "dist/recole.min.js",
   "scripts": {
+    "pretest":"npm run build",
     "prebuild": "rimraf dist",
     "test": "jest",
+    "test-only": "jest",
     "build": "rollup -c"
   },
   "author": "Ethan Kao",
