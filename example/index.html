@@ -30,8 +30,9 @@
                 set.add(before);
             };
             recole.prototype.track = function (target, key, options = {}) {
-
+                if(this.escape_effect_flag){ return }
                 target = this._2targetObj(target);
+                
                 if (this.currentEffect) {
                     let depsMap = this.targetMap.get(target); // Get the current depsMap for this target
                     if (!depsMap) {
@@ -68,7 +69,7 @@
                 }
             };
             recole.prototype.trigger = function (target, key) {
-
+                if(this.escape_effect_flag){ return }
                 target = this._2targetObj(target);
                 //==
                 const depsMap = this.targetMap.get(target); // Does this object have any properties that have dependencies (effects)
@@ -144,6 +145,11 @@
                 this.currentEffect = null;
                 return eff
             };
+            recole.prototype.escape_effect = function (fn) {
+                this.escape_effect_flag = true;
+                fn()
+                this.escape_effect_flag = null;
+            }
             recole.prototype.ref = function (init_value = 0, _relation_obj=null,_cache_obj=null) {
                 let _this = this;
                 let raw = init_value;
@@ -218,6 +224,10 @@
 
         })));
 
+    </script>
+    <script>
+        let debugMode = false
+        debugMode = true
     </script>
 </head>
 
@@ -554,18 +564,44 @@
                 switch (calculatorState.operator) {
                     case "+":
                         rtn = (+calculatorState.operandA) + (+calculatorState.operandB)
+                        recole1.escape_effect(()=>{
+                            calculatorState.operandA = rtn
+                            calculatorState.operandB = 0
+                            calculatorState.procedureState = 2
+                        })
+                        
                         break;
                     case "-":
                         rtn = (+calculatorState.operandA) - (+calculatorState.operandB)
+                        recole1.escape_effect(()=>{
+                            calculatorState.operandA = rtn
+                            calculatorState.operandB = 0
+                            calculatorState.procedureState = 2
+                        })
                         break;
                     case "x":
                         rtn = (+calculatorState.operandA) * (+calculatorState.operandB)
+                        recole1.escape_effect(()=>{
+                            calculatorState.operandA = rtn
+                            calculatorState.operandB = 0
+                            calculatorState.procedureState = 2
+                        })
                         break;
                     case "/":
                         rtn = (+calculatorState.operandA) / (+calculatorState.operandB)
+                        recole1.escape_effect(()=>{
+                            calculatorState.operandA = rtn
+                            calculatorState.operandB = 0
+                            calculatorState.procedureState = 2
+                        })
                         break;
                     case "%":
                         rtn = (+calculatorState.operandA) % (+calculatorState.operandB)
+                        recole1.escape_effect(()=>{
+                            calculatorState.operandA = rtn
+                            calculatorState.operandB = 0
+                            calculatorState.procedureState = 2
+                        })
                         break;
                 }
             }
@@ -623,7 +659,7 @@
         //demo test case 2:  Snake demo 
         console.log("demo test case 2")
 
-        let direction = recole1.ref("left")
+        let direction = recole1.ref("right")
 
         let apple = recole1.createReactive({ x: 5, y: 4 })
         let score = recole1.ref(0)
@@ -693,7 +729,6 @@
             while(
                 notAvailables.indexOf(JSON.stringify(newPos)) != -1
             ){
-                debugger
                 newPos = getRandomPos()
             }
             apple = recole1.createReactive(newPos)
@@ -750,7 +785,7 @@
                     
                     
                     if (head) { //snake head
-                        console.log("move start")
+                        // console.log("move start")
                     } else {
                         blockSet.add({ x: dueBlock.x, y: dueBlock.y })
                     }
@@ -779,7 +814,7 @@
             document.querySelector(".SnakeGame-score").innerHTML = score.value
             score.set_cache_obj({value: score.value})
         })
-        let debugMode = false
+        
         let vv
         document.querySelector(".SnakeGame-control #up").addEventListener("click", () => {
             if (direction.value == "down") return
@@ -844,7 +879,6 @@
                         vv = (block1.x - 1) % 7
                         if (vv < 0) vv += 7
                         block1.x = vv
-
                         break;
                 
                     default:
@@ -852,6 +886,26 @@
                 }
             }, 300);
         }
+        document.addEventListener('keydown', function(el) {
+            switch (el.keyCode) {
+                case 38:
+                    if (direction.value == "down") return
+                    direction.value = "up"
+                    break;
+                case 39:
+                    if (direction.value == "left") return
+                    direction.value = "right"
+                    break;
+                case 40:
+                    if (direction.value == "up") return
+                    direction.value = "down"
+                    break;
+                case 37:
+                    if (direction.value == "right") return
+                    direction.value = "left"
+                    break;
+            }
+        });
 
         
 
