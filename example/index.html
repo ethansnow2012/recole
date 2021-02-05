@@ -84,9 +84,10 @@
                 }
             };
 
-            recole.prototype.createReactive = function (target, _relation_obj=null) {
+            recole.prototype.createReactive = function (target, _relation_obj=null,_cache_obj=null) {
                 let _this = this;
                 let relation_obj = _relation_obj
+                let cache_obj = _cache_obj
                 const handler = {
 
                     get(target, key, receiver) {
@@ -96,11 +97,11 @@
                     },
                     set(target, key, value, receiver) {
                         let oldValue = target[key];
-                        if (oldValue != value) {
+                        if ((oldValue != value)) {
                             _this.trigger_before(target, key);
                         }
                         let result = Reflect.set(target, key, value, receiver);
-                        if (result && oldValue != value) {
+                        if (result && (oldValue != value)) {
                             _this.trigger(target, key); // If this reactive property (target) has effects to rerun on SET, trigger them.
                         }
                         return result
@@ -123,8 +124,14 @@
                     set_relation_obj: (new_relation_obj)=>{
                         relation_obj = new_relation_obj
                     },
+                    set_cache_obj: (new_cache_obj)=>{
+                        cache_obj = new_cache_obj
+                    },
                     relation_obj: ()=>{
                         return relation_obj
+                    },
+                    cache_obj:()=>{
+                        return cache_obj
                     }
                 });
                 
@@ -611,7 +618,6 @@
 
         let blockSet = new Set();//body
 
-
         let removeCurrent = function (block) {
             document
                 .querySelector(`.SnakeGame tr[data-cord='${block.y}']`)
@@ -623,7 +629,30 @@
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
+        let reStartSnake = ()=>{
+            document.querySelectorAll(".SnakeGame td.active").forEach((el)=>{
+                el.classList.remove("active")
+            })
+            
+            blockArray.forEach((el)=>{
+                recole1.cancel(el)
+            })
 
+            block5 = recole1.createReactive({ x: 0, y: 1 })
+            block4 = recole1.createReactive({ x: 0, y: 2 }, block5)
+            block3 = recole1.createReactive({ x: 0, y: 3 }, block4)
+            block2 = recole1.createReactive({ x: 0, y: 4 }, block3)
+            block1 = recole1.createReactive({ x: 1, y: 4 }, block2)//head
+
+            blockArray = [block1, block2, block3, block4, block5]
+
+            blockSet = new Set();//body
+
+            blockArray.forEach((block, ii) => {
+                let dueBlock = block
+                initSnakeBlock(dueBlock, ii==0?true:false, ii)
+            })
+        }
         let initApple = () => {
             if (apple) {
                 document
@@ -644,10 +673,14 @@
                 { first_effect: true })
         }
         let initSnakeBlock = (dueBlock, head=false, str) => {
-            let nextBlock = dueBlock.relation_obj()
+            document
+                .querySelector(`.SnakeGame tr[data-cord='${dueBlock.y}']`)
+                .querySelector(`td[data-cord='${dueBlock.x}']`)
+                .classList.add("active")
             recole1.watch(
                 dueBlock,
                 () => {
+                    let nextBlock = dueBlock.relation_obj()
                     document
                         .querySelector(`.SnakeGame tr[data-cord='${dueBlock.y}']`)
                         .querySelector(`td[data-cord='${dueBlock.x}']`)
@@ -655,50 +688,43 @@
                     if (head) { //snake head
                         if (Array.from(blockSet).map(x => JSON.stringify(x)).indexOf(JSON.stringify({ x: dueBlock.x, y: dueBlock.y })) != -1) { //check dead
                             console.log("dead")
-
+                            reStartSnake()
+                        }else{
+                            blockSet.clear()
                         }
                         if (JSON.stringify(Object.assign({}, block1)) == JSON.stringify(Object.assign({}, apple))) {
                             console.log("score!!")
                             score.value += 1
                             initApple()
                             // insert a new block in the reactivity chain
-                            // -- cancel 
-
-                            /*
-                            recole1.cancel(dueBlock)
-                            recole1.cancel(nextBlock)
-                            let newBlock = recole1.createReactive({ x: nextBlock.x, y: nextBlock.y })
-                            initSnakeBlock(dueBlock, newBlock, true, "new")
-                            initSnakeBlock(newBlock, nextBlock, false, "new2")
-                            */
-
-                            //initSnakeBlock(nextBlock, , false, "new3")
-                            // blockArray.splice(0, 1, recole1.createReactive({ x: null, y: null }))
+                            let cache_obj = dueBlock.cache_obj()
+                            let newBlock = recole1.createReactive({ x: cache_obj.x, y: cache_obj.y })
+                            dueBlock.set_relation_obj(newBlock)
+                            newBlock.set_relation_obj(nextBlock)
+                            initSnakeBlock(newBlock, false, "new")
+                            
                         }
+                        
                     }
-                    if (nextBlock) {
-                        if(nextBlock.x==dueBlock.x && nextBlock.y==dueBlock.y){ // deal with new block
-                            dueBlock.x = block1.x
-                            dueBlock.y = block1.y
-                            return
-                        }
-                    }
-                    blockSet.clear()
+                    
+                    
                 },
                 () => {
-                    if(str == "new"){
-                        console.log("new")
+                    let nextBlock = dueBlock.relation_obj()
+                    dueBlock.set_cache_obj({x:dueBlock.x, y:dueBlock.y})
+                    if(str=="new"){
+                        console.log(str)
                     }
-                    if(str == "new2"){
-                        console.log("new2")
-                    }
+                    
+                    
                     if (head) { //snake head
                         console.log("move start")
                     } else {
                         blockSet.add({ x: dueBlock.x, y: dueBlock.y })
                     }
-                    removeCurrent(dueBlock)
-                    
+                    if( !nextBlock || (nextBlock.x != dueBlock.x || nextBlock.y != dueBlock.y) ){
+                        removeCurrent(dueBlock)
+                    }
                     if (nextBlock) {
                         
                         nextBlock.x = dueBlock.x
@@ -712,7 +738,6 @@
 
         blockArray.forEach((block, ii) => {
             let dueBlock = block
-            let nextBlock = blockArray[ii + 1]
             initSnakeBlock(dueBlock, ii==0?true:false, ii)
         })
 
