@@ -84,8 +84,9 @@
                 }
             };
 
-            recole.prototype.createReactive = function (target) {
+            recole.prototype.createReactive = function (target, _relation_obj={}) {
                 let _this = this;
+                let relation_obj = _relation_obj
                 const handler = {
 
                     get(target, key, receiver) {
@@ -103,7 +104,7 @@
                             _this.trigger(target, key); // If this reactive property (target) has effects to rerun on SET, trigger them.
                         }
                         return result
-                    },
+                    }
                 };
                 let _proxy = new Proxy(target, handler);
                 let keys = Reflect.ownKeys(target);
@@ -118,6 +119,15 @@
                         });
                     }
                 });
+                Object.setPrototypeOf(_proxy, {
+                    set_relation_obj: (new_relation_obj)=>{
+                        relation_obj = new_relation_obj
+                    },
+                    relation_obj: ()=>{
+                        return relation_obj
+                    }
+                });
+                
                 this.proxyMap.set(_proxy, target);
                 return _proxy
             };
@@ -498,7 +508,7 @@
             operandB: 0,
             operator: null,
             procedureState: 0
-        })
+        },{test1:"test1"})
         let screenStr = recole1.computed(() => {
             console.log(calculatorState.procedureState)
             let rtn = ""
@@ -611,74 +621,101 @@
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        let initApple = ()=>{
-            if(apple){
+        let initApple = () => {
+            if (apple) {
                 document
                     .querySelector(`.SnakeGame tr[data-cord='${apple.y}']`)
                     .querySelector(`td[data-cord='${apple.x}']`)
                     .classList.remove("activeRed")
                 recole1.cancel(apple)
             }
-            apple = recole1.createReactive({ x: getRandomInt(0,7), y: getRandomInt(0,7) })
+            apple = recole1.createReactive({ x: getRandomInt(0, 6), y: getRandomInt(0, 6) })
             recole1.watch(apple, () => {
                 console.log("apple watch")
                 document
                     .querySelector(`.SnakeGame tr[data-cord='${apple.y}']`)
                     .querySelector(`td[data-cord='${apple.x}']`)
                     .classList.add("activeRed")
-            }, 
-            () => {},
-            { first_effect: true })
+            },
+                () => { },
+                { first_effect: true })
         }
-        initApple()
-
-
-        blockArray.forEach((block, ii)=>{
-            let dueBlock = block
-            let nextBlock = blockArray[ii+1]
+        let initSnakeBlock = (dueBlock, nextBlock, head=false, str) => {
             recole1.watch(
-                dueBlock, 
-                ()=>{
+                dueBlock,
+                () => {
                     document
                         .querySelector(`.SnakeGame tr[data-cord='${dueBlock.y}']`)
                         .querySelector(`td[data-cord='${dueBlock.x}']`)
                         .classList.add("active")
-                    if(ii==0){ //snake head
+                    if (head) { //snake head
                         if (Array.from(blockSet).map(x => JSON.stringify(x)).indexOf(JSON.stringify({ x: dueBlock.x, y: dueBlock.y })) != -1) { //check dead
                             console.log("dead")
-                            
+
                         }
-                        if(JSON.stringify(Object.assign({}, block1))==JSON.stringify(Object.assign({}, apple))){
+                        if (JSON.stringify(Object.assign({}, block1)) == JSON.stringify(Object.assign({}, apple))) {
                             console.log("score!!")
                             score.value += 1
                             initApple()
+                            // insert a new block in the reactivity chain
+                            // -- cancel 
+                            recole1.cancel(dueBlock)
+                            recole1.cancel(nextBlock)
+                            let newBlock = recole1.createReactive({ x: nextBlock.x, y: nextBlock.y })
+                            initSnakeBlock(dueBlock, newBlock, true, "new")
+                            initSnakeBlock(newBlock, nextBlock, false, "new2")
+                            //initSnakeBlock(nextBlock, , false, "new3")
+                            // blockArray.splice(0, 1, recole1.createReactive({ x: null, y: null }))
                         }
                     }
-                    
+                    if (nextBlock) {
+                        if(nextBlock.x==dueBlock.x && nextBlock.y==dueBlock.y){ // deal with new block
+                            dueBlock.x = block1.x
+                            dueBlock.y = block1.y
+                            return
+                        }
+                    }
                     blockSet.clear()
                 },
-                ()=>{
-                    if(ii==0){ //snake head
+                () => {
+                    if(str == "new"){
+                        console.log("new")
+                    }
+                    if(str == "new2"){
+                        console.log("new2")
+                    }
+                    if (head) { //snake head
                         console.log("move start")
-                    }else{
-                        blockSet.add({ x: block2.x, y: block2.y })
+                    } else {
+                        blockSet.add({ x: dueBlock.x, y: dueBlock.y })
                     }
                     removeCurrent(dueBlock)
-                    if(nextBlock){
+                    
+                    if (nextBlock) {
+                        
                         nextBlock.x = dueBlock.x
                         nextBlock.y = dueBlock.y
                     }
                 }
             )
+            
+        }
+        initApple()
+
+        blockArray.forEach((block, ii) => {
+            let dueBlock = block
+            let nextBlock = blockArray[ii + 1]
+            initSnakeBlock(dueBlock, nextBlock, ii, ii==0?true:false)
         })
+
 
         block1.x = block1.x + 1
 
-        recole1.watch(score, ()=>{
+        recole1.watch(score, () => {
             document.querySelector(".SnakeGame-score").innerHTML = score.value
         })
 
-        
+
 
         document.querySelector(".SnakeGame-control #up").addEventListener("click", () => {
             if (direction.value == "down") return
