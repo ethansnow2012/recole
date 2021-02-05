@@ -144,10 +144,12 @@
                 this.currentEffect = null;
                 return eff
             };
-            recole.prototype.ref = function (init_value = 0) {
+            recole.prototype.ref = function (init_value = 0, _relation_obj=null,_cache_obj=null) {
                 let _this = this;
                 let raw = init_value;
                 let raw_old = init_value;
+                let relation_obj = _relation_obj
+                let cache_obj = _cache_obj
                 const r = {
                     get value() {
                         _this.track(r, 'value');
@@ -162,7 +164,6 @@
                         raw = newVal;
                         _this.trigger(r, 'value');
                     },
-
                     // failed design 
                     getOld: () => {
                         return raw_old
@@ -173,6 +174,20 @@
                     }
                     // failed design end
                 };
+                Object.setPrototypeOf(r, {
+                    set_relation_obj: (new_relation_obj)=>{
+                        relation_obj = new_relation_obj
+                    },
+                    set_cache_obj: (new_cache_obj)=>{
+                        cache_obj = new_cache_obj
+                    },
+                    relation_obj: ()=>{
+                        return relation_obj
+                    },
+                    cache_obj:()=>{
+                        return cache_obj
+                    }
+                });
                 return r
             };
             recole.prototype.computed = function (getter) {
@@ -326,7 +341,10 @@
             font-size: 1.2em;
         }
     </style>
-    <div class="SnakeGame-score">0</div>
+    <div>
+        <div class="SnakeGame-scorelabel">Score: </div>
+        <div class="SnakeGame-score">0</div>
+    </div>
     <table class="SnakeGame">
         <tbody>
             <tr data-cord="0">
@@ -492,20 +510,23 @@
             </tr>
         </tbody>
     </table>
-    <table class="SnakeGame-control">
-        <tbody>
-            <tr>
-                <td></td>
-                <td id="up">↑</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td id="left">←</td>
-                <td id="down">↓</td>
-                <td id="right">→</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="SnakeGame-panel">
+        <table class="SnakeGame-control">
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td id="up">↑</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td id="left">←</td>
+                    <td id="down">↓</td>
+                    <td id="right">→</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
     <script>
         let recole1 = new recole()
 
@@ -602,7 +623,7 @@
         //demo test case 2:  Snake demo 
         console.log("demo test case 2")
 
-        let direction = recole1.ref("")
+        let direction = recole1.ref("left")
 
         let apple = recole1.createReactive({ x: 5, y: 4 })
         let score = recole1.ref(0)
@@ -652,6 +673,10 @@
                 let dueBlock = block
                 initSnakeBlock(dueBlock, ii==0?true:false, ii)
             })
+            score.value = 0
+        }
+        let getRandomPos=()=>{
+            return { x: getRandomInt(0, 6), y: getRandomInt(0, 6) }
         }
         let initApple = () => {
             if (apple) {
@@ -661,7 +686,17 @@
                     .classList.remove("activeRed")
                 recole1.cancel(apple)
             }
-            apple = recole1.createReactive({ x: getRandomInt(0, 6), y: getRandomInt(0, 6) })
+            
+            let notAvailables = Array.from(blockArray).map(x => JSON.stringify(x))
+            //notAvailables.push(JSON.stringify({ x: block1.x, y: block1.y }))
+            let newPos = getRandomPos()
+            while(
+                notAvailables.indexOf(JSON.stringify(newPos)) != -1
+            ){
+                debugger
+                newPos = getRandomPos()
+            }
+            apple = recole1.createReactive(newPos)
             recole1.watch(apple, () => {
                 console.log("apple watch")
                 document
@@ -669,8 +704,8 @@
                     .querySelector(`td[data-cord='${apple.x}']`)
                     .classList.add("activeRed")
             },
-                () => { },
-                { first_effect: true })
+            () => { },
+            { first_effect: true })
         }
         let initSnakeBlock = (dueBlock, head=false, str) => {
             document
@@ -686,12 +721,6 @@
                         .querySelector(`td[data-cord='${dueBlock.x}']`)
                         .classList.add("active")
                     if (head) { //snake head
-                        if (Array.from(blockSet).map(x => JSON.stringify(x)).indexOf(JSON.stringify({ x: dueBlock.x, y: dueBlock.y })) != -1) { //check dead
-                            console.log("dead")
-                            reStartSnake()
-                        }else{
-                            blockSet.clear()
-                        }
                         if (JSON.stringify(Object.assign({}, block1)) == JSON.stringify(Object.assign({}, apple))) {
                             console.log("score!!")
                             score.value += 1
@@ -701,13 +730,16 @@
                             let newBlock = recole1.createReactive({ x: cache_obj.x, y: cache_obj.y })
                             dueBlock.set_relation_obj(newBlock)
                             newBlock.set_relation_obj(nextBlock)
-                            initSnakeBlock(newBlock, false, "new")
-                            
+                            initSnakeBlock(newBlock, false, "new") 
+                        }
+                        if (Array.from(blockSet).map(x => JSON.stringify(x)).indexOf(JSON.stringify({ x: dueBlock.x, y: dueBlock.y })) != -1) { //check dead
+                            console.log("dead")
+                            reStartSnake()
+                        }else{
+                            blockSet.clear()
                         }
                         
                     }
-                    
-                    
                 },
                 () => {
                     let nextBlock = dueBlock.relation_obj()
@@ -743,49 +775,85 @@
 
 
         block1.x = block1.x + 1
-
         recole1.watch(score, () => {
             document.querySelector(".SnakeGame-score").innerHTML = score.value
+            score.set_cache_obj({value: score.value})
         })
-
-
-
+        let debugMode = false
+        let vv
         document.querySelector(".SnakeGame-control #up").addEventListener("click", () => {
             if (direction.value == "down") return
-
-            let vv = (block1.y - 1) % 7
-            if (vv < 0) vv += 7
-            block1.y = vv
-
+            if(debugMode){
+                vv = (block1.y - 1) % 7
+                if (vv < 0) vv += 7
+                block1.y = vv
+            }
             direction.value = "up"
         })
         document.querySelector(".SnakeGame-control #right").addEventListener("click", () => {
             if (direction.value == "left") return
-
-            let vv = (block1.x + 1) % 7
-            if (vv < 0) vv += 7
-            block1.x = vv
-
+            if(debugMode){
+                vv = (block1.x + 1) % 7
+                if (vv < 0) vv += 7
+                block1.x = vv
+            }
             direction.value = "right"
         })
         document.querySelector(".SnakeGame-control #down").addEventListener("click", () => {
             if (direction.value == "up") return
-
-            let vv = (block1.y + 1) % 7
-            if (vv < 0) vv += 7
-            block1.y = vv
-
+            if(debugMode){
+                vv = (block1.y + 1) % 7
+                if (vv < 0) vv += 7
+                block1.y = vv
+            }
+            
             direction.value = "down"
         })
         document.querySelector(".SnakeGame-control #left").addEventListener("click", () => {
             if (direction.value == "right") return
-
-            let vv = (block1.x - 1) % 7
-            if (vv < 0) vv += 7
-            block1.x = vv
-
+            if(debugMode){
+                vv = (block1.x - 1) % 7
+                if (vv < 0) vv += 7
+                block1.x = vv
+            }
+            
             direction.value = "left"
         })
+        if(debugMode){
+
+        }else{
+            setInterval(() => {
+                let vv
+                switch (direction.value) {
+                    case "up":
+                        vv = (block1.y - 1) % 7
+                        if (vv < 0) vv += 7
+                        block1.y = vv
+                        break;
+                    case "right":
+                        vv = (block1.x + 1) % 7
+                        if (vv < 0) vv += 7
+                        block1.x = vv
+                        break;
+                    case "down":
+                        vv = (block1.y + 1) % 7
+                        if (vv < 0) vv += 7
+                        block1.y = vv
+                        break;
+                    case "left":
+                        vv = (block1.x - 1) % 7
+                        if (vv < 0) vv += 7
+                        block1.x = vv
+
+                        break;
+                
+                    default:
+                        break;
+                }
+            }, 300);
+        }
+
+        
 
 
     </script>

@@ -71,9 +71,10 @@ recole.prototype.trigger = function (target, key) {
     }
 };
 
-recole.prototype.createReactive = function (target, _relation_obj=null) {
+recole.prototype.createReactive = function (target, _relation_obj=null,_cache_obj=null) {
     let _this = this;
     let relation_obj = _relation_obj
+    let cache_obj = _cache_obj
     const handler = {
 
         get(target, key, receiver) {
@@ -83,11 +84,11 @@ recole.prototype.createReactive = function (target, _relation_obj=null) {
         },
         set(target, key, value, receiver) {
             let oldValue = target[key];
-            if (oldValue != value) {
+            if ((oldValue != value)) {
                 _this.trigger_before(target, key);
             }
             let result = Reflect.set(target, key, value, receiver);
-            if (result && oldValue != value) {
+            if (result && (oldValue != value)) {
                 _this.trigger(target, key); // If this reactive property (target) has effects to rerun on SET, trigger them.
             }
             return result
@@ -110,8 +111,14 @@ recole.prototype.createReactive = function (target, _relation_obj=null) {
         set_relation_obj: (new_relation_obj)=>{
             relation_obj = new_relation_obj
         },
+        set_cache_obj: (new_cache_obj)=>{
+            cache_obj = new_cache_obj
+        },
         relation_obj: ()=>{
             return relation_obj
+        },
+        cache_obj:()=>{
+            return cache_obj
         }
     });
     
@@ -124,10 +131,12 @@ recole.prototype.effect = function (eff) {
     this.currentEffect = null;
     return eff
 };
-recole.prototype.ref = function (init_value = 0) {
+recole.prototype.ref = function (init_value = 0, _relation_obj=null,_cache_obj=null) {
     let _this = this;
     let raw = init_value;
     let raw_old = init_value;
+    let relation_obj = _relation_obj
+    let cache_obj = _cache_obj
     const r = {
         get value() {
             _this.track(r, 'value');
@@ -142,7 +151,6 @@ recole.prototype.ref = function (init_value = 0) {
             raw = newVal;
             _this.trigger(r, 'value');
         },
-
         // failed design 
         getOld: () => {
             return raw_old
@@ -153,6 +161,20 @@ recole.prototype.ref = function (init_value = 0) {
         }
         // failed design end
     };
+    Object.setPrototypeOf(r, {
+        set_relation_obj: (new_relation_obj)=>{
+            relation_obj = new_relation_obj
+        },
+        set_cache_obj: (new_cache_obj)=>{
+            cache_obj = new_cache_obj
+        },
+        relation_obj: ()=>{
+            return relation_obj
+        },
+        cache_obj:()=>{
+            return cache_obj
+        }
+    });
     return r
 };
 recole.prototype.computed = function (getter) {
