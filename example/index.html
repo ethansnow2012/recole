@@ -84,7 +84,7 @@
                 }
             };
 
-            recole.prototype.createReactive = function (target, _relation_obj={}) {
+            recole.prototype.createReactive = function (target, _relation_obj=null) {
                 let _this = this;
                 let relation_obj = _relation_obj
                 const handler = {
@@ -599,11 +599,14 @@
 
         let apple = recole1.createReactive({ x: 5, y: 4 })
         let score = recole1.ref(0)
-        let block1 = recole1.createReactive({ x: 1, y: 4 })//head
-        let block2 = recole1.createReactive({ x: 0, y: 4 })
-        let block3 = recole1.createReactive({ x: 0, y: 3 })
-        let block4 = recole1.createReactive({ x: 0, y: 2 })
+        
+        
         let block5 = recole1.createReactive({ x: 0, y: 1 })
+        let block4 = recole1.createReactive({ x: 0, y: 2 }, block5)
+        let block3 = recole1.createReactive({ x: 0, y: 3 }, block4)
+        let block2 = recole1.createReactive({ x: 0, y: 4 }, block3)
+        let block1 = recole1.createReactive({ x: 1, y: 4 }, block2)//head
+        
         let blockArray = [block1, block2, block3, block4, block5]
 
         let blockSet = new Set();//body
@@ -640,7 +643,8 @@
                 () => { },
                 { first_effect: true })
         }
-        let initSnakeBlock = (dueBlock, nextBlock, head=false, str) => {
+        let initSnakeBlock = (dueBlock, head=false, str) => {
+            let nextBlock = dueBlock.relation_obj()
             recole1.watch(
                 dueBlock,
                 () => {
@@ -659,11 +663,15 @@
                             initApple()
                             // insert a new block in the reactivity chain
                             // -- cancel 
+
+                            /*
                             recole1.cancel(dueBlock)
                             recole1.cancel(nextBlock)
                             let newBlock = recole1.createReactive({ x: nextBlock.x, y: nextBlock.y })
                             initSnakeBlock(dueBlock, newBlock, true, "new")
                             initSnakeBlock(newBlock, nextBlock, false, "new2")
+                            */
+
                             //initSnakeBlock(nextBlock, , false, "new3")
                             // blockArray.splice(0, 1, recole1.createReactive({ x: null, y: null }))
                         }
@@ -705,7 +713,7 @@
         blockArray.forEach((block, ii) => {
             let dueBlock = block
             let nextBlock = blockArray[ii + 1]
-            initSnakeBlock(dueBlock, nextBlock, ii, ii==0?true:false)
+            initSnakeBlock(dueBlock, ii==0?true:false, ii)
         })
 
 
