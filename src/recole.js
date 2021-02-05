@@ -148,14 +148,17 @@ recole.prototype.computed = function (getter) {
     this.effect(() => (result.value = getter()))
     return result
 }
-recole.prototype.watch = function(target, eff, before){
+recole.prototype.watch = function(target, eff, before, options={}){
     //let _this = this
 
     this.currentEffect = eff
-    
+    if(options["first_effect"]==true){
+        eff()
+    }
+    let trackOptions = before?{before:before}:{}
     let keys = Reflect.ownKeys(target)
     keys.forEach((_key)=>{
-        this.track(target,_key, before?{before:before}:{})
+        this.track(target,_key, trackOptions)
     })
     
     this.currentEffect = null

@@ -2,9 +2,9 @@
   "name": "recole",
   "version": "1.0.3",
   "description": "",
-  "main": "dist/recole.min.js",
+  "main": "dist/recole.js",
   "scripts": {
-    "pretest":"npm run build",
+    "pretest": "npm run build",
     "prebuild": "rimraf dist",
     "test": "jest",
     "test-only": "jest",
@@ -14,6 +14,7 @@
   "license": "MIT",
   "devDependencies": {
     "jest": "^26.6.3",
+    "puppeteer": "^7.0.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.38.4",
     "rollup-plugin-node-resolve": "^5.2.0",

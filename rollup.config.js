@@ -4,7 +4,7 @@ export default {
     input: "src/recole.js",
     output: {
       name:"recole",
-      file: './dist/recole.min.js',
+      file: './dist/recole.js',
       format: 'umd'
     }
   };

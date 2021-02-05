@@ -5,7 +5,188 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="https://cdn.jsdelivr.net/npm/recole"></script>
+    <script>
+        (function (global, factory) {
+            typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+                typeof define === 'function' && define.amd ? define(factory) :
+                    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.recole = factory());
+        }(this, (function () {
+            'use strict';
+
+            var recole = function () {
+                this.symbol_reactive = Symbol();
+                this._beforeMap = new WeakMap();
+                //this.effMap = new WeakMap();
+                this.proxyMap = new WeakMap();
+                this.targetMap = new WeakMap(); // storing objects of type "object" not "proxy"
+                this.currentEffect = null;
+                console.log("init");
+            };
+            recole.prototype.addBefore = function (target, before) {
+                let set = this._beforeMap.get(target);// return object of type "Set"
+                if (!set) {
+                    this._beforeMap.set(target, (set = new Set()));
+                }
+                set.add(before);
+            };
+            recole.prototype.track = function (target, key, options = {}) {
+
+                target = this._2targetObj(target);
+                if (this.currentEffect) {
+                    let depsMap = this.targetMap.get(target); // Get the current depsMap for this target
+                    if (!depsMap) {
+                        // There is no map.
+                        this.targetMap.set(target, (depsMap = new Map())); // Crecolee one
+                    }
+                    let dep = depsMap.get(key); // Get the current dependencies (effects) that need to be run when this is set
+                    if (!dep) {
+                        // There is no dependencies (effects)
+                        depsMap.set(key, (dep = new Set())); // Crecolee a new Set
+                    }
+                    if (options.before) {
+                        this.addBefore(target, options.before);
+                    }
+                    //this.effMap.set(this.currentEffect, this.currentEffect)
+                    dep.add(this.currentEffect);
+                }
+            };
+            recole.prototype.cancel = function (target) {
+                target = this._2targetObj(target);
+                this._beforeMap.delete(target);
+                this.targetMap.delete(target);
+
+            };
+
+            recole.prototype.trigger_before = function (target, key) {
+                target = this._2targetObj(target);
+                //==
+                let beforeSet = this._beforeMap.get(target);
+                if (beforeSet) {
+                    beforeSet.forEach((eff) => {
+                        eff();
+                    });
+                }
+            };
+            recole.prototype.trigger = function (target, key) {
+
+                target = this._2targetObj(target);
+                //==
+                const depsMap = this.targetMap.get(target); // Does this object have any properties that have dependencies (effects)
+                if (!depsMap) {
+                    return
+                }
+                let dep = depsMap.get(key); // If there are dependencies (effects) associated with this
+                if (dep) {
+                    dep.forEach((eff) => {
+                        // run them all
+                        eff();
+                    });
+                }
+            };
+
+            recole.prototype.createReactive = function (target) {
+                let _this = this;
+                const handler = {
+
+                    get(target, key, receiver) {
+                        let result = Reflect.get(target, key, receiver);
+                        _this.track(target, key); // If this reactive property (target) is GET inside then track the effect to rerun on SET
+                        return result
+                    },
+                    set(target, key, value, receiver) {
+                        let oldValue = target[key];
+                        if (oldValue != value) {
+                            _this.trigger_before(target, key);
+                        }
+                        let result = Reflect.set(target, key, value, receiver);
+                        if (result && oldValue != value) {
+                            _this.trigger(target, key); // If this reactive property (target) has effects to rerun on SET, trigger them.
+                        }
+                        return result
+                    },
+                };
+                let _proxy = new Proxy(target, handler);
+                let keys = Reflect.ownKeys(target);
+                keys.forEach((_key) => {
+                    let el = target[_key];
+                    if (el
+                        && typeof el == "object"
+                        && !Array.isArray(el)
+                    ) {
+                        _this.effect(() => {
+                            _proxy[_key] = el.ref[el.key];//this.targetMap.get(el.ref)[el.key]
+                        });
+                    }
+                });
+                this.proxyMap.set(_proxy, target);
+                return _proxy
+            };
+            recole.prototype.effect = function (eff) {
+                this.currentEffect = eff; // must be a function
+                this.currentEffect();
+                this.currentEffect = null;
+                return eff
+            };
+            recole.prototype.ref = function (init_value = 0) {
+                let _this = this;
+                let raw = init_value;
+                let raw_old = init_value;
+                const r = {
+                    get value() {
+                        _this.track(r, 'value');
+                        return raw
+                    },
+                    set value(newVal) {
+                        if (raw == newVal) {
+                            //raw_old = raw
+                            return;
+                        }
+                        //raw_old = raw
+                        raw = newVal;
+                        _this.trigger(r, 'value');
+                    },
+
+                    // failed design 
+                    getOld: () => {
+                        return raw_old
+                    },
+                    setOld: () => {
+                        raw_old = raw;
+                        return raw_old
+                    }
+                    // failed design end
+                };
+                return r
+            };
+            recole.prototype.computed = function (getter) {
+                let result = this.ref();
+                this.effect(() => (result.value = getter()));
+                return result
+            };
+            recole.prototype.watch = function (target, eff, before, options = {}) {
+                //let _this = this
+
+                this.currentEffect = eff;
+                if (options["first_effect"] == true) {
+                    eff();
+                }
+                let trackOptions = before ? { before: before } : {};
+                let keys = Reflect.ownKeys(target);
+                keys.forEach((_key) => {
+                    this.track(target, _key, trackOptions);
+                });
+
+                this.currentEffect = null;
+            };
+            recole.prototype._2targetObj = function (target) {
+                return this.proxyMap.get(target) ? this.proxyMap.get(target) : target
+            };
+
+            return recole;
+
+        })));
+
+    </script>
 </head>
 
 <body>
@@ -95,6 +276,10 @@
             background: green;
         }
 
+        .SnakeGame td.activeRed {
+            background: red;
+        }
+
         .SnakeGame td.active2 {
             background: blue;
         }
@@ -124,6 +309,7 @@
             font-size: 1.2em;
         }
     </style>
+    <div class="SnakeGame-score">0</div>
     <table class="SnakeGame">
         <tbody>
             <tr data-cord="0">
@@ -401,13 +587,16 @@
 
         let direction = recole1.ref("")
 
-        let block1 = recole1.createReactive({ x: 1, y: 4 })
+        let apple = recole1.createReactive({ x: 5, y: 4 })
+        let score = recole1.ref(0)
+        let block1 = recole1.createReactive({ x: 1, y: 4 })//head
         let block2 = recole1.createReactive({ x: 0, y: 4 })
         let block3 = recole1.createReactive({ x: 0, y: 3 })
         let block4 = recole1.createReactive({ x: 0, y: 2 })
         let block5 = recole1.createReactive({ x: 0, y: 1 })
+        let blockArray = [block1, block2, block3, block4, block5]
 
-        let blockSet = new Set();
+        let blockSet = new Set();//body
 
 
         let removeCurrent = function (block) {
@@ -416,87 +605,80 @@
                 .querySelector(`td[data-cord='${block.x}']`)
                 .classList.remove("active")
         }
-        recole1.watch(block1,
-            () => {
-                document
-                    .querySelector(`.SnakeGame tr[data-cord='${block1.y}']`)
-                    .querySelector(`td[data-cord='${block1.x}']`)
-                    .classList.add("active")
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
 
-                if (Array.from(blockSet).map(x => JSON.stringify(x)).indexOf(JSON.stringify({ x: block1.x, y: block1.y })) != -1) { //check dead
-                    console.log("dead")
+        let initApple = ()=>{
+            if(apple){
+                document
+                    .querySelector(`.SnakeGame tr[data-cord='${apple.y}']`)
+                    .querySelector(`td[data-cord='${apple.x}']`)
+                    .classList.remove("activeRed")
+                recole1.cancel(apple)
+            }
+            apple = recole1.createReactive({ x: getRandomInt(0,7), y: getRandomInt(0,7) })
+            recole1.watch(apple, () => {
+                console.log("apple watch")
+                document
+                    .querySelector(`.SnakeGame tr[data-cord='${apple.y}']`)
+                    .querySelector(`td[data-cord='${apple.x}']`)
+                    .classList.add("activeRed")
+            }, 
+            () => {},
+            { first_effect: true })
+        }
+        initApple()
+
+
+        blockArray.forEach((block, ii)=>{
+            let dueBlock = block
+            let nextBlock = blockArray[ii+1]
+            recole1.watch(
+                dueBlock, 
+                ()=>{
+                    document
+                        .querySelector(`.SnakeGame tr[data-cord='${dueBlock.y}']`)
+                        .querySelector(`td[data-cord='${dueBlock.x}']`)
+                        .classList.add("active")
+                    if(ii==0){ //snake head
+                        if (Array.from(blockSet).map(x => JSON.stringify(x)).indexOf(JSON.stringify({ x: dueBlock.x, y: dueBlock.y })) != -1) { //check dead
+                            console.log("dead")
+                            
+                        }
+                        if(JSON.stringify(Object.assign({}, block1))==JSON.stringify(Object.assign({}, apple))){
+                            console.log("score!!")
+                            score.value += 1
+                            initApple()
+                        }
+                    }
+                    
+                    blockSet.clear()
+                },
+                ()=>{
+                    if(ii==0){ //snake head
+                        console.log("move start")
+                    }else{
+                        blockSet.add({ x: block2.x, y: block2.y })
+                    }
+                    removeCurrent(dueBlock)
+                    if(nextBlock){
+                        nextBlock.x = dueBlock.x
+                        nextBlock.y = dueBlock.y
+                    }
                 }
-                blockSet.clear()
-            },
-            () => {
-                console.log("move start")
+            )
+        })
 
-                removeCurrent(block1)
+        block1.x = block1.x + 1
 
-                block2.x = block1.x
-                block2.y = block1.y
+        recole1.watch(score, ()=>{
+            document.querySelector(".SnakeGame-score").innerHTML = score.value
+        })
 
-            }
-        )
-        recole1.watch(block2,
-            () => {
-                document
-                    .querySelector(`.SnakeGame tr[data-cord='${block2.y}']`)
-                    .querySelector(`td[data-cord='${block2.x}']`)
-                    .classList.add("active")
-            },
-            () => {
-                removeCurrent(block2)
-
-                blockSet.add({ x: block2.x, y: block2.y })
-
-                block3.x = block2.x
-                block3.y = block2.y
-            }
-        )
-        recole1.watch(block3, () => {
-            document
-                .querySelector(`.SnakeGame tr[data-cord='${block3.y}']`)
-                .querySelector(`td[data-cord='${block3.x}']`)
-                .classList.add("active")
-        },
-            () => {
-                removeCurrent(block3)
-
-                blockSet.add({ x: block3.x, y: block3.y })
-
-                block4.x = block3.x
-                block4.y = block3.y
-            }
-        )
-        recole1.watch(block4, () => {
-            document
-                .querySelector(`.SnakeGame tr[data-cord='${block4.y}']`)
-                .querySelector(`td[data-cord='${block4.x}']`)
-                .classList.add("active")
-        },
-            () => {
-                removeCurrent(block4)
-
-                blockSet.add({ x: block4.x, y: block4.y })
-
-                block5.x = block4.x
-                block5.y = block4.y
-            }
-        )
-        recole1.watch(block5, () => {
-            document
-                .querySelector(`.SnakeGame tr[data-cord='${block5.y}']`)
-                .querySelector(`td[data-cord='${block5.x}']`)
-                .classList.add("active")
-        },
-            () => {
-                removeCurrent(block5)
-
-                blockSet.add({ x: block5.x, y: block5.y })
-                console.log(blockSet)
-            }
-        )
+        
 
         document.querySelector(".SnakeGame-control #up").addEventListener("click", () => {
             if (direction.value == "down") return
