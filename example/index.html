@@ -145,10 +145,16 @@
                 this.currentEffect = null;
                 return eff
             };
-            recole.prototype.escape_effect = function (fn) {
+            recole.prototype.escape_effect = function (aa) {
+                let rtn
                 this.escape_effect_flag = true;
-                fn()
+                if(typeof aa == "function"){
+                    rtn = aa()
+                }else{
+                    rtn = aa
+                }
                 this.escape_effect_flag = null;
+                return rtn
             }
             recole.prototype.ref = function (init_value = 0, _relation_obj=null,_cache_obj=null) {
                 let _this = this;
@@ -228,6 +234,7 @@
     <script>
         let debugMode = false
         debugMode = true
+        let recole1 = new recole()
     </script>
 </head>
 
@@ -538,7 +545,7 @@
     </div>
     
     <script>
-        let recole1 = new recole()
+        
 
         //demo test case 1:  calculator demo 
         let calculatorState = recole1.createReactive({
@@ -546,7 +553,7 @@
             operandB: 0,
             operator: null,
             procedureState: 0
-        },{test1:"test1"})
+        })
         let screenStr = recole1.computed(() => {
             console.log(calculatorState.procedureState)
             let rtn = ""
@@ -569,7 +576,6 @@
                             calculatorState.operandB = 0
                             calculatorState.procedureState = 2
                         })
-                        
                         break;
                     case "-":
                         rtn = (+calculatorState.operandA) - (+calculatorState.operandB)
@@ -595,7 +601,7 @@
                             calculatorState.procedureState = 2
                         })
                         break;
-                    case "%":
+                    case "%":
                         rtn = (+calculatorState.operandA) % (+calculatorState.operandB)
                         recole1.escape_effect(()=>{
                             calculatorState.operandA = rtn
@@ -613,15 +619,14 @@
         document.querySelectorAll(".calculator .number").forEach((el) => {
             el.addEventListener("click", () => {
                 if (calculatorState.procedureState == 0) {
-                    calculatorState.operandA = el.dataset.value
+                    calculatorState.operandA = +(recole1.escape_effect(calculatorState.operandA) + el.dataset.value)
                 } else if (calculatorState.procedureState == 1) {
-
                     calculatorState.operandA = calculatorState.operandA.toString() + el.dataset.value
                 } else if (calculatorState.procedureState == 2) {
-                    calculatorState.operandB = el.dataset.value
+                    calculatorState.operandB = +(recole1.escape_effect(calculatorState.operandB) + el.dataset.value)
                     calculatorState.procedureState = 4
                 } else if (calculatorState.procedureState == 3) {
-
+                    calculatorState.operandB = calculatorState.operandB.toString() + el.dataset.value
                 }
             })
         })

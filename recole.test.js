@@ -102,7 +102,6 @@ test("test case 10: ref in ref",()=>{
     tempStr2 = "222"
     recole1.watch(tc10_block1, ()=>{
         tempStr = "tc11: watch1" // this should not be invoked
-        
     })
     recole1.watch(tc10_block1.value.inner, ()=>{
         tempStr2 = "tc11: watch2"

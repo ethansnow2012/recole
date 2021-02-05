@@ -17,8 +17,9 @@ recole.prototype.addBefore = function (target, before) {
     set.add(before);
 };
 recole.prototype.track = function (target, key, options = {}) {
-
+    if(this.escape_effect_flag){ return }
     target = this._2targetObj(target);
+    
     if (this.currentEffect) {
         let depsMap = this.targetMap.get(target); // Get the current depsMap for this target
         if (!depsMap) {
@@ -55,7 +56,7 @@ recole.prototype.trigger_before = function (target, key) {
     }
 };
 recole.prototype.trigger = function (target, key) {
-
+    if(this.escape_effect_flag){ return }
     target = this._2targetObj(target);
     //==
     const depsMap = this.targetMap.get(target); // Does this object have any properties that have dependencies (effects)
@@ -131,6 +132,17 @@ recole.prototype.effect = function (eff) {
     this.currentEffect = null;
     return eff
 };
+recole.prototype.escape_effect = function (aa) {
+    let rtn
+    this.escape_effect_flag = true;
+    if(typeof aa == "function"){
+        rtn = aa()
+    }else{
+        rtn = aa
+    }
+    this.escape_effect_flag = null;
+    return rtn
+}
 recole.prototype.ref = function (init_value = 0, _relation_obj=null,_cache_obj=null) {
     let _this = this;
     let raw = init_value;
