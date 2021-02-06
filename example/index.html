@@ -30,9 +30,9 @@
                 set.add(before);
             };
             recole.prototype.track = function (target, key, options = {}) {
-                if(this.escape_effect_flag){ return }
+                if (this.escape_effect_flag) { return }
                 target = this._2targetObj(target);
-                
+
                 if (this.currentEffect) {
                     let depsMap = this.targetMap.get(target); // Get the current depsMap for this target
                     if (!depsMap) {
@@ -69,7 +69,7 @@
                 }
             };
             recole.prototype.trigger = function (target, key) {
-                if(this.escape_effect_flag){ return }
+                if (this.escape_effect_flag) { return }
                 target = this._2targetObj(target);
                 //==
                 const depsMap = this.targetMap.get(target); // Does this object have any properties that have dependencies (effects)
@@ -85,7 +85,7 @@
                 }
             };
 
-            recole.prototype.createReactive = function (target, _relation_obj=null,_cache_obj=null) {
+            recole.prototype.createReactive = function (target, _relation_obj = null, _cache_obj = null) {
                 let _this = this;
                 let relation_obj = _relation_obj
                 let cache_obj = _cache_obj
@@ -122,20 +122,20 @@
                     }
                 });
                 Object.setPrototypeOf(_proxy, {
-                    set_relation_obj: (new_relation_obj)=>{
+                    set_relation_obj: (new_relation_obj) => {
                         relation_obj = new_relation_obj
                     },
-                    set_cache_obj: (new_cache_obj)=>{
+                    set_cache_obj: (new_cache_obj) => {
                         cache_obj = new_cache_obj
                     },
-                    relation_obj: ()=>{
+                    relation_obj: () => {
                         return relation_obj
                     },
-                    cache_obj:()=>{
+                    cache_obj: () => {
                         return cache_obj
                     }
                 });
-                
+
                 this.proxyMap.set(_proxy, target);
                 return _proxy
             };
@@ -148,15 +148,15 @@
             recole.prototype.escape_effect = function (aa) {
                 let rtn
                 this.escape_effect_flag = true;
-                if(typeof aa == "function"){
+                if (typeof aa == "function") {
                     rtn = aa()
-                }else{
+                } else {
                     rtn = aa
                 }
                 this.escape_effect_flag = null;
                 return rtn
             }
-            recole.prototype.ref = function (init_value = 0, _relation_obj=null,_cache_obj=null) {
+            recole.prototype.ref = function (init_value = 0, _relation_obj = null, _cache_obj = null) {
                 let _this = this;
                 let raw = init_value;
                 let raw_old = init_value;
@@ -187,16 +187,16 @@
                     // failed design end
                 };
                 Object.setPrototypeOf(r, {
-                    set_relation_obj: (new_relation_obj)=>{
+                    set_relation_obj: (new_relation_obj) => {
                         relation_obj = new_relation_obj
                     },
-                    set_cache_obj: (new_cache_obj)=>{
+                    set_cache_obj: (new_cache_obj) => {
                         cache_obj = new_cache_obj
                     },
-                    relation_obj: ()=>{
+                    relation_obj: () => {
                         return relation_obj
                     },
-                    cache_obj:()=>{
+                    cache_obj: () => {
                         return cache_obj
                     }
                 });
@@ -359,193 +359,242 @@
         }
     </style>
     <div>
-        <div class="SnakeGame-scorelabel">Score: </div>
-        <div class="SnakeGame-score">0</div>
-    </div>
-    <table class="SnakeGame">
-        <tbody>
-            <tr data-cord="0">
-                <td data-cord="0">
 
-                </td>
-                <td data-cord="1">
 
-                </td>
-                <td data-cord="2">
-
-                </td>
-                <td data-cord="3">
-
-                </td>
-                <td data-cord="4">
-
-                </td>
-                <td data-cord="5">
-
-                </td>
-                <td data-cord="6">
-
-                </td>
-            </tr>
-            <tr data-cord="1">
-                <td data-cord="0">
-
-                </td>
-                <td data-cord="1">
-
-                </td>
-                <td data-cord="2">
-
-                </td>
-                <td data-cord="3">
-
-                </td>
-                <td data-cord="4">
-
-                </td>
-                <td data-cord="5">
-
-                </td>
-                <td data-cord="6">
-
-                </td>
-            </tr>
-            <tr data-cord="2">
-                <td data-cord="0">
-
-                </td>
-                <td data-cord="1">
-
-                </td>
-                <td data-cord="2">
-
-                </td>
-                <td data-cord="3">
-
-                </td>
-                <td data-cord="4">
-
-                </td>
-                <td data-cord="5">
-
-                </td>
-                <td data-cord="6">
-
-                </td>
-            </tr>
-            <tr data-cord="3">
-                <td data-cord="0">
-
-                </td>
-                <td data-cord="1">
-
-                </td>
-                <td data-cord="2">
-
-                </td>
-                <td data-cord="3">
-
-                </td>
-                <td data-cord="4">
-
-                </td>
-                <td data-cord="5">
-
-                </td>
-                <td data-cord="6">
-
-                </td>
-            </tr>
-            <tr data-cord="4">
-                <td data-cord="0">
-
-                </td>
-                <td data-cord="1">
-
-                </td>
-                <td data-cord="2">
-
-                </td>
-                <td data-cord="3">
-
-                </td>
-                <td data-cord="4">
-
-                </td>
-                <td data-cord="5">
-
-                </td>
-                <td data-cord="6">
-
-                </td>
-            </tr>
-            <tr data-cord="5">
-                <td data-cord="0">
-
-                </td>
-                <td data-cord="1">
-
-                </td>
-                <td data-cord="2">
-
-                </td>
-                <td data-cord="3">
-
-                </td>
-                <td data-cord="4">
-
-                </td>
-                <td data-cord="5">
-
-                </td>
-                <td data-cord="6">
-
-                </td>
-            </tr>
-            <tr data-cord="6">
-                <td data-cord="0">
-
-                </td>
-                <td data-cord="1">
-
-                </td>
-                <td data-cord="2">
-
-                </td>
-                <td data-cord="3">
-
-                </td>
-                <td data-cord="4">
-
-                </td>
-                <td data-cord="5">
-
-                </td>
-                <td data-cord="6">
-
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <div class="SnakeGame-panel">
-        <table class="SnakeGame-control">
+        <div>
+            <div class="SnakeGame-scorelabel">Score: </div>
+            <div class="SnakeGame-score">0</div>
+        </div>
+        <table class="SnakeGame">
             <tbody>
-                <tr>
-                    <td></td>
-                    <td id="up">↑</td>
-                    <td></td>
+                <tr data-cord="0">
+                    <td data-cord="0">
+
+                    </td>
+                    <td data-cord="1">
+
+                    </td>
+                    <td data-cord="2">
+
+                    </td>
+                    <td data-cord="3">
+
+                    </td>
+                    <td data-cord="4">
+
+                    </td>
+                    <td data-cord="5">
+
+                    </td>
+                    <td data-cord="6">
+
+                    </td>
                 </tr>
-                <tr>
-                    <td id="left">←</td>
-                    <td id="down">↓</td>
-                    <td id="right">→</td>
+                <tr data-cord="1">
+                    <td data-cord="0">
+
+                    </td>
+                    <td data-cord="1">
+
+                    </td>
+                    <td data-cord="2">
+
+                    </td>
+                    <td data-cord="3">
+
+                    </td>
+                    <td data-cord="4">
+
+                    </td>
+                    <td data-cord="5">
+
+                    </td>
+                    <td data-cord="6">
+
+                    </td>
+                </tr>
+                <tr data-cord="2">
+                    <td data-cord="0">
+
+                    </td>
+                    <td data-cord="1">
+
+                    </td>
+                    <td data-cord="2">
+
+                    </td>
+                    <td data-cord="3">
+
+                    </td>
+                    <td data-cord="4">
+
+                    </td>
+                    <td data-cord="5">
+
+                    </td>
+                    <td data-cord="6">
+
+                    </td>
+                </tr>
+                <tr data-cord="3">
+                    <td data-cord="0">
+
+                    </td>
+                    <td data-cord="1">
+
+                    </td>
+                    <td data-cord="2">
+
+                    </td>
+                    <td data-cord="3">
+
+                    </td>
+                    <td data-cord="4">
+
+                    </td>
+                    <td data-cord="5">
+
+                    </td>
+                    <td data-cord="6">
+
+                    </td>
+                </tr>
+                <tr data-cord="4">
+                    <td data-cord="0">
+
+                    </td>
+                    <td data-cord="1">
+
+                    </td>
+                    <td data-cord="2">
+
+                    </td>
+                    <td data-cord="3">
+
+                    </td>
+                    <td data-cord="4">
+
+                    </td>
+                    <td data-cord="5">
+
+                    </td>
+                    <td data-cord="6">
+
+                    </td>
+                </tr>
+                <tr data-cord="5">
+                    <td data-cord="0">
+
+                    </td>
+                    <td data-cord="1">
+
+                    </td>
+                    <td data-cord="2">
+
+                    </td>
+                    <td data-cord="3">
+
+                    </td>
+                    <td data-cord="4">
+
+                    </td>
+                    <td data-cord="5">
+
+                    </td>
+                    <td data-cord="6">
+
+                    </td>
+                </tr>
+                <tr data-cord="6">
+                    <td data-cord="0">
+
+                    </td>
+                    <td data-cord="1">
+
+                    </td>
+                    <td data-cord="2">
+
+                    </td>
+                    <td data-cord="3">
+
+                    </td>
+                    <td data-cord="4">
+
+                    </td>
+                    <td data-cord="5">
+
+                    </td>
+                    <td data-cord="6">
+
+                    </td>
                 </tr>
             </tbody>
         </table>
+        <div class="SnakeGame-panel">
+            <table class="SnakeGame-control">
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td id="up">↑</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td id="left">←</td>
+                        <td id="down">↓</td>
+                        <td id="right">→</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-    
+
+    <div>
+        <style>
+            #dataStream-playground{
+                width: 1200px;
+                height: 1200px;
+                background: #d2d2d2;
+                position: absolute;
+            }
+            .dataStream-block{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 20px;
+                height: 20px;
+                background: #212121;
+            }
+            .dataStream-connectLine{
+                z-index: 5;
+                position: absolute;
+                opacity: 0.3;
+            }
+        </style>
+        <div id="dataStream-playground">
+            <div style="display: none;">
+                <template id="dataStream-template-block">
+                    <div class="dataStream-obj dataStream-block" key="@@_key_@@" style="left:@@postion_X1_@@px;top: @@postion_Y1_@@px;">
+                        <div class="dataStream-block-label" style="position: relative; top:-20px; left:20px;">0</div>
+                    </div>
+                </template>
+                <template id="dataStream-template-line">
+                    <svg class="dataStream-obj dataStream-connectLine" width="1200" height="1200" key="@@_key_@@">
+                        <line y1="@@postion_Y1_@@" x1="@@postion_X1_@@" y2="@@postion_Y2_@@" x2="@@postion_X2_@@"  stroke="#212121" style="transition: all 700ms ease-in-out;"/>
+                        <circle id="dot" r="30" cy="@@postion_Y1_@@" cx="@@postion_X1_@@" fill="#ffa500d4" style="transition: all 700ms ease-in-out;"/>
+                    </svg>
+                </template>
+                
+            </div>
+            
+        </div>
+    </div>
+
+
+
+
+
     <script>
-        
+
 
         //demo test case 1:  calculator demo 
         let calculatorState = recole1.createReactive({
@@ -571,7 +620,7 @@
                 switch (calculatorState.operator) {
                     case "+":
                         rtn = (+calculatorState.operandA) + (+calculatorState.operandB)
-                        recole1.escape_effect(()=>{
+                        recole1.escape_effect(() => {
                             calculatorState.operandA = rtn
                             calculatorState.operandB = 0
                             calculatorState.procedureState = 2
@@ -579,7 +628,7 @@
                         break;
                     case "-":
                         rtn = (+calculatorState.operandA) - (+calculatorState.operandB)
-                        recole1.escape_effect(()=>{
+                        recole1.escape_effect(() => {
                             calculatorState.operandA = rtn
                             calculatorState.operandB = 0
                             calculatorState.procedureState = 2
@@ -587,7 +636,7 @@
                         break;
                     case "x":
                         rtn = (+calculatorState.operandA) * (+calculatorState.operandB)
-                        recole1.escape_effect(()=>{
+                        recole1.escape_effect(() => {
                             calculatorState.operandA = rtn
                             calculatorState.operandB = 0
                             calculatorState.procedureState = 2
@@ -595,7 +644,7 @@
                         break;
                     case "/":
                         rtn = (+calculatorState.operandA) / (+calculatorState.operandB)
-                        recole1.escape_effect(()=>{
+                        recole1.escape_effect(() => {
                             calculatorState.operandA = rtn
                             calculatorState.operandB = 0
                             calculatorState.procedureState = 2
@@ -603,7 +652,7 @@
                         break;
                     case "%":
                         rtn = (+calculatorState.operandA) % (+calculatorState.operandB)
-                        recole1.escape_effect(()=>{
+                        recole1.escape_effect(() => {
                             calculatorState.operandA = rtn
                             calculatorState.operandB = 0
                             calculatorState.procedureState = 2
@@ -668,14 +717,14 @@
 
         let apple = recole1.createReactive({ x: 5, y: 4 })
         let score = recole1.ref(0)
-        
-        
+
+
         let block5 = recole1.createReactive({ x: 0, y: 1 })
         let block4 = recole1.createReactive({ x: 0, y: 2 }, block5)
         let block3 = recole1.createReactive({ x: 0, y: 3 }, block4)
         let block2 = recole1.createReactive({ x: 0, y: 4 }, block3)
         let block1 = recole1.createReactive({ x: 1, y: 4 }, block2)//head
-        
+
         let blockArray = [block1, block2, block3, block4, block5]
 
         let blockSet = new Set();//body
@@ -691,12 +740,12 @@
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
-        let reStartSnake = ()=>{
-            document.querySelectorAll(".SnakeGame td.active").forEach((el)=>{
+        let reStartSnake = () => {
+            document.querySelectorAll(".SnakeGame td.active").forEach((el) => {
                 el.classList.remove("active")
             })
-            
-            blockArray.forEach((el)=>{
+
+            blockArray.forEach((el) => {
                 recole1.cancel(el)
             })
 
@@ -712,11 +761,11 @@
 
             blockArray.forEach((block, ii) => {
                 let dueBlock = block
-                initSnakeBlock(dueBlock, ii==0?true:false, ii)
+                initSnakeBlock(dueBlock, ii == 0 ? true : false, ii)
             })
             score.value = 0
         }
-        let getRandomPos=()=>{
+        let getRandomPos = () => {
             return { x: getRandomInt(0, 6), y: getRandomInt(0, 6) }
         }
         let initApple = () => {
@@ -727,13 +776,13 @@
                     .classList.remove("activeRed")
                 recole1.cancel(apple)
             }
-            
+
             let notAvailables = Array.from(blockArray).map(x => JSON.stringify(x))
             //notAvailables.push(JSON.stringify({ x: block1.x, y: block1.y }))
             let newPos = getRandomPos()
-            while(
+            while (
                 notAvailables.indexOf(JSON.stringify(newPos)) != -1
-            ){
+            ) {
                 newPos = getRandomPos()
             }
             apple = recole1.createReactive(newPos)
@@ -744,10 +793,10 @@
                     .querySelector(`td[data-cord='${apple.x}']`)
                     .classList.add("activeRed")
             },
-            () => { },
-            { first_effect: true })
+                () => { },
+                { first_effect: true })
         }
-        let initSnakeBlock = (dueBlock, head=false, str) => {
+        let initSnakeBlock = (dueBlock, head = false, str) => {
             document
                 .querySelector(`.SnakeGame tr[data-cord='${dueBlock.y}']`)
                 .querySelector(`td[data-cord='${dueBlock.x}']`)
@@ -770,60 +819,59 @@
                             let newBlock = recole1.createReactive({ x: cache_obj.x, y: cache_obj.y })
                             dueBlock.set_relation_obj(newBlock)
                             newBlock.set_relation_obj(nextBlock)
-                            initSnakeBlock(newBlock, false, "new") 
+                            initSnakeBlock(newBlock, false, "new")
                         }
                         if (Array.from(blockSet).map(x => JSON.stringify(x)).indexOf(JSON.stringify({ x: dueBlock.x, y: dueBlock.y })) != -1) { //check dead
                             console.log("dead")
                             reStartSnake()
-                        }else{
+                        } else {
                             blockSet.clear()
                         }
-                        
+
                     }
                 },
                 () => {
                     let nextBlock = dueBlock.relation_obj()
-                    dueBlock.set_cache_obj({x:dueBlock.x, y:dueBlock.y})
-                    if(str=="new"){
-                        console.log(str)
+                    dueBlock.set_cache_obj({ x: dueBlock.x, y: dueBlock.y })
+                    if (str == "new") {
+                        // console.log(str)
                     }
-                    
-                    
+
+
                     if (head) { //snake head
                         // console.log("move start")
                     } else {
                         blockSet.add({ x: dueBlock.x, y: dueBlock.y })
                     }
-                    if( !nextBlock || (nextBlock.x != dueBlock.x || nextBlock.y != dueBlock.y) ){
+                    if (!nextBlock || (nextBlock.x != dueBlock.x || nextBlock.y != dueBlock.y)) {
                         removeCurrent(dueBlock)
                     }
                     if (nextBlock) {
-                        
+
                         nextBlock.x = dueBlock.x
                         nextBlock.y = dueBlock.y
                     }
                 }
             )
-            
         }
         initApple()
 
         blockArray.forEach((block, ii) => {
             let dueBlock = block
-            initSnakeBlock(dueBlock, ii==0?true:false, ii)
+            initSnakeBlock(dueBlock, ii == 0 ? true : false, ii)
         })
 
 
         block1.x = block1.x + 1
         recole1.watch(score, () => {
             document.querySelector(".SnakeGame-score").innerHTML = score.value
-            score.set_cache_obj({value: score.value})
+            score.set_cache_obj({ value: score.value })
         })
-        
+
         let vv
         document.querySelector(".SnakeGame-control #up").addEventListener("click", () => {
             if (direction.value == "down") return
-            if(debugMode){
+            if (debugMode) {
                 vv = (block1.y - 1) % 7
                 if (vv < 0) vv += 7
                 block1.y = vv
@@ -832,7 +880,7 @@
         })
         document.querySelector(".SnakeGame-control #right").addEventListener("click", () => {
             if (direction.value == "left") return
-            if(debugMode){
+            if (debugMode) {
                 vv = (block1.x + 1) % 7
                 if (vv < 0) vv += 7
                 block1.x = vv
@@ -841,27 +889,27 @@
         })
         document.querySelector(".SnakeGame-control #down").addEventListener("click", () => {
             if (direction.value == "up") return
-            if(debugMode){
+            if (debugMode) {
                 vv = (block1.y + 1) % 7
                 if (vv < 0) vv += 7
                 block1.y = vv
             }
-            
+
             direction.value = "down"
         })
         document.querySelector(".SnakeGame-control #left").addEventListener("click", () => {
             if (direction.value == "right") return
-            if(debugMode){
+            if (debugMode) {
                 vv = (block1.x - 1) % 7
                 if (vv < 0) vv += 7
                 block1.x = vv
             }
-            
+
             direction.value = "left"
         })
-        if(debugMode){
+        if (debugMode) {
 
-        }else{
+        } else {
             setInterval(() => {
                 let vv
                 switch (direction.value) {
@@ -885,13 +933,13 @@
                         if (vv < 0) vv += 7
                         block1.x = vv
                         break;
-                
+
                     default:
                         break;
                 }
             }, 300);
         }
-        document.addEventListener('keydown', function(el) {
+        document.addEventListener('keydown', function (el) {
             switch (el.keyCode) {
                 case 38:
                     if (direction.value == "down") return
@@ -911,9 +959,98 @@
                     break;
             }
         });
+        // demo test case 3:  modulization && data streaming
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        var recole2 = new recole()
+        var dataBlock = function(self_obj, relation_obj={x:0, y:0}, key , label=0){
+            this.self_reactivity = recole2.createReactive({
+                x: self_obj.x,
+                y: self_obj.y,
+                number: label
+            })
+            this.self_obj = self_obj
+            this.relation_obj = relation_obj
+            
+            this.key = key
+            this.line_template = document.querySelector("#dataStream-template-line").innerHTML
+            this.block_template = document.querySelector("#dataStream-template-block").innerHTML
 
+            this.block_template = this.block_template.replaceAll("@@postion_X1_@@", self_obj.x).replaceAll("@@postion_Y1_@@", self_obj.y)
+                                .replaceAll("@@_key_@@", key)
+            this.html = this.createElementFromHTML(this.block_template)
+            document.querySelector("#dataStream-playground").appendChild(this.html)
+
+            this.line_template = this.line_template
+                                .replaceAll("@@postion_X1_@@", self_obj.x).replaceAll("@@postion_Y1_@@", self_obj.y)
+                                .replaceAll("@@postion_X2_@@", relation_obj.x).replaceAll("@@postion_Y2_@@", relation_obj.y)
+                                .replaceAll("@@_key_@@", key)
+            document.querySelector("#dataStream-playground").appendChild(this.createElementFromHTML(this.line_template))
+            recole2.effect(()=>{
+                this.html.querySelector(".dataStream-block-label").innerHTML = this.self_reactivity.number
+            })
+
+            
+            let procedure1 = ()=>{ // self-chaining Promise-based procedure
+                let randomTime_procedure = (resolve)=>{
+                    let time = getRandomInt(2000,4000) // random
+                    setTimeout(()=>{
+                        this.self_reactivity.number = getRandomInt(1,10)
+                        this.animate_one(time)
+                        resolve()
+                    }, time)
+                }
+                return new Promise(randomTime_procedure)
+                .then(()=>{
+                    procedure1()
+                })
+            }
+            procedure1() 
+            
+            // setInterval(()=>{
+            //     this.self_reactivity.number = getRandomInt(1,5)
+            // }, getRandomInt(1000,5000))
+
+            key++
+        }
         
+        dataBlock.prototype.createElementFromHTML = function(htmlString) {
+            var div = document.createElement('div');
+            div.innerHTML = htmlString.trim();
+            return div.firstChild; 
+        }
+        dataBlock.prototype.animate_one = function(time){
+            let el = document.querySelector(`.dataStream-connectLine[key='${this.key}'] #dot`)
+            el.style.transitionDuration = "unset"
+            el.setAttributeNS(null, "cx", recole2.escape_effect(this.self_reactivity.x));
+            el.setAttributeNS(null, "cy", recole2.escape_effect(this.self_reactivity.y));
+            setTimeout(()=>{
+                el.style.transitionDuration = time/1000+"s"
+                el.setAttributeNS(null, "cx", recole2.escape_effect(this.relation_obj.x));
+                el.setAttributeNS(null, "cy", recole2.escape_effect(this.relation_obj.y));
+            },1)
+            
+        }
 
+        let obj_pos = [{x:320, y:500}, {x:420, y:300}, {x:220, y:200}, {x:520, y:600}]
+
+        obj_pos.map((el, ii)=>{
+            let elA = obj_pos[ii]
+            let elB = obj_pos[ii+1]?obj_pos[ii+1]:obj_pos[0]
+            
+            return {
+                self: new dataBlock(elA, elB, ii, getRandomInt(1,5)),
+                key: ii
+            }
+        })
+        // .forEach((el)=>{
+        //     el.self.animate_one()
+        // })
+        
+        // let dataBlock1 = new dataBlock(320, 500)
 
     </script>
 </body>
