@@ -563,7 +563,7 @@
                 left: 0;
                 width: 20px;
                 height: 20px;
-                
+                z-index: 100;
             }
             .dataStream-block-inner{
                 top:-10px;
@@ -573,6 +573,22 @@
                 height: 100%;
                 background: #212121;
             }
+            .dataStream-block-inner-hover{
+                position: absolute;
+                top: 0;
+                left: calc(100% + 15px);
+            }
+            .dataStream-block-inner-hover-label{
+                width: max-content;
+            }
+            .dataStream-block-inner-hover-i + .dataStream-block-inner-hover-i{
+                margin-top: 6px;
+            }
+            /* .dataStream-block-inner:hover .dataStream-block-inner-hover{
+                position: absolute;
+                top: 0;
+                right: 18px;
+            } */
             .dataStream-connectLine{
                 z-index: 5;
                 position: absolute;
@@ -587,7 +603,23 @@
                 <template id="dataStream-template-block">
                     <div class="dataStream-obj dataStream-block" key="@@_key_@@" style="left:@@postion_X1_@@px;top: @@postion_Y1_@@px;">
                         <div class="dataStream-block-inner">
-                            <div class="dataStream-block-label" style="position: relative; top:-20px; left:20px;">0</div>
+                            <div class="dataStream-block-label" style="position: relative; top:-20px; left:20px; display: none;">0</div>
+                            <div class="dataStream-block-inner-hover">
+                                <div class="dataStream-block-inner-hover-i" key="number">
+                                    <div class="dataStream-block-inner-hover-label">Vaule: </div>
+                                    <div class="dataStream-block-inner-hover-value"></div>
+                                </div>
+                                <div class="dataStream-block-inner-hover-i" key="outputingValue">
+                                    <div class="dataStream-block-inner-hover-label">Outputing: </div>
+                                    <div class="dataStream-block-inner-hover-value"></div>
+                                </div>
+                                <div class="dataStream-block-inner-hover-i" key="_inComingValue">
+                                    <div class="dataStream-block-inner-hover-label">In Coming: </div>
+                                    <div class="dataStream-block-inner-hover-value"></div>
+                                </div>
+                                
+                            </div>
+                            
                         </div>
                     </div>
                 </template>
@@ -975,7 +1007,6 @@
         });
         // demo test case 3:  modulization && data streaming && interactions between objects
 
-        let aamode=true
         function getRandomInt(min, max) {
             min = Math.ceil(min);
             max = Math.floor(max);
@@ -988,50 +1019,61 @@
             this.relation_obj = relation_obj // reactive object
             this.recole = this.self_obj.recole
 
-            this.key = key
+            //this.key = key
+            this.key = this.recole.ref(key)
             this.line_template = document.querySelector("#dataStream-template-line").innerHTML
             this.block_template = document.querySelector("#dataStream-template-block").innerHTML
 
             this.block_template = this.block_template.replaceAll("@@postion_X1_@@", self_obj.x).replaceAll("@@postion_Y1_@@", self_obj.y)
-                                .replaceAll("@@_key_@@", key)
+                                .replaceAll("@@_key_@@", this.key.value)
             this.html = this.createElementFromHTML(this.block_template)
             document.querySelector("#dataStream-playground").appendChild(this.html)
 
             this.line_template = this.line_template
                                 .replaceAll("@@postion_X1_@@", self_obj.x).replaceAll("@@postion_Y1_@@", self_obj.y)
                                 .replaceAll("@@postion_X2_@@", relation_obj.x).replaceAll("@@postion_Y2_@@", relation_obj.y)
-                                .replaceAll("@@_key_@@", key)
+                                .replaceAll("@@_key_@@", this.key.value)
             document.querySelector("#dataStream-playground").appendChild(this.createElementFromHTML(this.line_template))
             this.recole.effect(()=>{
-                //console.log("effect")
                 _number = this.self_obj.number
-                //this.self_obj.outputingValue = _number
-                this.html.querySelector(".dataStream-block-label").innerHTML = _number //(+_number)/(this.key==0?3:2)
+                this.html.querySelector(".dataStream-block-label").innerHTML = _number 
             })
-            this.procedure_task2 = ()=>{
-                //console.log(`No.${this.key} updates other's number == self_obj.outputingValue: ${this.self_obj.outputingValue}` )
-                
-                this.self_obj._inComingValue = this.recole.escape_effect(this.self_obj.outputingValue + this.self_obj._inComingValue) 
-                this.self_obj.outputingValue = 0
-                // update other's number
-                this.relation_obj.number = this.recole.escape_effect(this.relation_obj.number +  this.self_obj._inComingValue)
-                this.self_obj._inComingValue = 0
+            this.recole.effect(()=>{
+                this.self_obj.outputingValue; // inject reactivity
+                this.animate_one_end()
+            })
+            this.recole.effect(()=>{
+                this.html.querySelector(".dataStream-block-inner-hover-i[key='number'] .dataStream-block-inner-hover-value").innerHTML = this.self_obj.number
+            })
+            this.recole.effect(()=>{
+                this.html.querySelector(".dataStream-block-inner-hover-i[key='outputingValue'] .dataStream-block-inner-hover-value").innerHTML = this.self_obj.outputingValue
+            })
+            this.recole.effect(()=>{
+                this.html.querySelector(".dataStream-block-inner-hover-i[key='_inComingValue'] .dataStream-block-inner-hover-value").innerHTML = this.self_obj._inComingValue
+            })
+
+            this.update_self = ()=>{
+                //update self
+                this.self_obj.number = this.recole.escape_effect(this.self_obj._inComingValue + this.self_obj.number)
+                this.self_obj._inComingValue = 0                
             }
             this.procedure_loop = ()=>{ // self-chaining Promise-based procedure
                 let randomTime_procedure = (resolve)=>{
-                    this.self_obj.outputingValue = getRandomInt(1,100)//this.key==0?2:3
-                    //console.log(`No.${this.key} randomTime_procedure: == self_obj.outputingValue: ${this.self_obj.outputingValue}`)
-                    let transTime = 1000//getRandomInt(100,7000) // random
-                    this.animate_one(transTime, this.recole.escape_effect(this.self_obj.outputingValue))
-                    setTimeout(()=>{    
+                    let randomInt = getRandomInt(1,100)
+                    this.self_obj.outputingValue = randomInt
+                    
+                    let transTime = getRandomInt(700,3000) // random
+                    this.animate_one(transTime, this.self_obj.outputingValue)
+                    setTimeout(()=>{
+                        this.self_obj.outputingValue = 0    
+                        this.relation_obj._inComingValue = this.recole.escape_effect(this.relation_obj._inComingValue + randomInt) // this effect take time to arrive 
                         resolve()
                     }, transTime)
                 }
                 
                 return new Promise(randomTime_procedure)
                     .then(()=>{
-                        this.animate_one_end()
-                        this.procedure_task2()
+                        this.update_self()
                     })
                     .then(()=>{ // resting 5s
                         return new Promise((resolve)=>{
@@ -1041,15 +1083,11 @@
                         })
                     })
                     .then(()=>{
-                        console.log("end")
-                        if(this.key==aamode || aamode===true){
-                            this.procedure_loop()
-                        }
+                        this.procedure_loop()
                     })
             }
             this.procedure_loop() 
-
-            key++
+ 
         }
         
         dataBlock.prototype.createElementFromHTML = function(htmlString) {
@@ -1058,7 +1096,7 @@
             return div.firstChild; 
         }
         dataBlock.prototype.animate_one = function(time, r=30){
-            let el = document.querySelector(`.dataStream-connectLine[key='${this.key}'] #dot`)
+            let el = document.querySelector(`.dataStream-connectLine[key='${this.key.value}'] #dot`)
             el.style.transitionDuration = "unset"
             el.setAttributeNS(null, "cx", this.recole.escape_effect(this.self_obj.x));
             el.setAttributeNS(null, "cy", this.recole.escape_effect(this.self_obj.y));
@@ -1067,16 +1105,16 @@
                 el.style.transitionDuration = time/1000+"s"
                 el.setAttributeNS(null, "cx", this.recole.escape_effect(this.relation_obj.x));
                 el.setAttributeNS(null, "cy", this.recole.escape_effect(this.relation_obj.y));
-            },10) // sometime getting the "transitionDuration" fails
+            },300) // sometime getting the "transitionDuration" fails
             
         }
         dataBlock.prototype.animate_one_end = function(){
-            let el = document.querySelector(`.dataStream-connectLine[key='${this.key}'] #dot`)
+            let el = document.querySelector(`.dataStream-connectLine[key='${this.key.value}'] #dot`)
             el.style.transitionDuration = "0.5s"
             el.setAttributeNS(null, "r", 0);
         }
 
-        let obj_pos = [{x:320, y:500}, {x:420, y:300},{x:220, y:200}, {x:520, y:600}] //, 
+        let obj_pos = [{x:320, y:500}, {x:720, y:300},{x:220, y:200}, {x:120, y:540},{x:720, y:600},{x:490, y:720},{x:340, y:220}] //, 
         obj_pos = obj_pos.map((el,ii)=>{
             let _recole = new recole()
             return _recole.createReactive({

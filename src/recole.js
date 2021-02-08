@@ -17,9 +17,9 @@ recole.prototype.addBefore = function (target, before) {
     set.add(before);
 };
 recole.prototype.track = function (target, key, options = {}) {
-    if(this.escape_effect_flag){ return }
+    if (this.escape_effect_flag) { return }
     target = this._2targetObj(target);
-    
+
     if (this.currentEffect) {
         let depsMap = this.targetMap.get(target); // Get the current depsMap for this target
         if (!depsMap) {
@@ -56,7 +56,7 @@ recole.prototype.trigger_before = function (target, key) {
     }
 };
 recole.prototype.trigger = function (target, key) {
-    if(this.escape_effect_flag){ return }
+    if (this.escape_effect_flag) { return }
     target = this._2targetObj(target);
     //==
     const depsMap = this.targetMap.get(target); // Does this object have any properties that have dependencies (effects)
@@ -72,7 +72,7 @@ recole.prototype.trigger = function (target, key) {
     }
 };
 
-recole.prototype.createReactive = function (target, _relation_obj=null,_cache_obj=null) {
+recole.prototype.createReactive = function (target, _relation_obj = null, _cache_obj = null) {
     let _this = this;
     let relation_obj = _relation_obj
     let cache_obj = _cache_obj
@@ -102,6 +102,7 @@ recole.prototype.createReactive = function (target, _relation_obj=null,_cache_ob
         if (el
             && typeof el == "object"
             && !Array.isArray(el)
+            && _key != "recole"
         ) {
             _this.effect(() => {
                 _proxy[_key] = el.ref[el.key];//this.targetMap.get(el.ref)[el.key]
@@ -109,20 +110,20 @@ recole.prototype.createReactive = function (target, _relation_obj=null,_cache_ob
         }
     });
     Object.setPrototypeOf(_proxy, {
-        set_relation_obj: (new_relation_obj)=>{
+        set_relation_obj: (new_relation_obj) => {
             relation_obj = new_relation_obj
         },
-        set_cache_obj: (new_cache_obj)=>{
+        set_cache_obj: (new_cache_obj) => {
             cache_obj = new_cache_obj
         },
-        relation_obj: ()=>{
+        relation_obj: () => {
             return relation_obj
         },
-        cache_obj:()=>{
+        cache_obj: () => {
             return cache_obj
         }
     });
-    
+
     this.proxyMap.set(_proxy, target);
     return _proxy
 };
@@ -135,15 +136,15 @@ recole.prototype.effect = function (eff) {
 recole.prototype.escape_effect = function (aa) {
     let rtn
     this.escape_effect_flag = true;
-    if(typeof aa == "function"){
+    if (typeof aa == "function") {
         rtn = aa()
-    }else{
+    } else {
         rtn = aa
     }
     this.escape_effect_flag = null;
     return rtn
 }
-recole.prototype.ref = function (init_value = 0, _relation_obj=null,_cache_obj=null) {
+recole.prototype.ref = function (init_value = 0, _relation_obj = null, _cache_obj = null) {
     let _this = this;
     let raw = init_value;
     let raw_old = init_value;
@@ -174,16 +175,16 @@ recole.prototype.ref = function (init_value = 0, _relation_obj=null,_cache_obj=n
         // failed design end
     };
     Object.setPrototypeOf(r, {
-        set_relation_obj: (new_relation_obj)=>{
+        set_relation_obj: (new_relation_obj) => {
             relation_obj = new_relation_obj
         },
-        set_cache_obj: (new_cache_obj)=>{
+        set_cache_obj: (new_cache_obj) => {
             cache_obj = new_cache_obj
         },
-        relation_obj: ()=>{
+        relation_obj: () => {
             return relation_obj
         },
-        cache_obj:()=>{
+        cache_obj: () => {
             return cache_obj
         }
     });
