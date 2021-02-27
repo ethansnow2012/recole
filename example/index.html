@@ -347,116 +347,125 @@
     <div>
         <pre>
         <code class="javascript">
-        //demo test case 1:  calculator demo 
-        let calculatorState = recole1.createReactive({
-            operandA: 0,
-            operandB: 0,
-            operator: null,
-            procedureState: 0
-        })
-        let screenStr = recole1.computed(() => {
-            console.log(calculatorState.procedureState)
-            let rtn = ""
-            if (calculatorState.procedureState == 0) {// expecting operandA
-                rtn = calculatorState.operandA
-            } else if (calculatorState.procedureState == 1) { // expecting operandA floating number
-                rtn = calculatorState.operandA
-            } else if (calculatorState.procedureState == 2) { // expecting operandB
-                rtn = calculatorState.operandA
-            } else if (calculatorState.procedureState == 3) { // expecting operandA floating number
-                rtn = calculatorState.operandA
-            } else if (calculatorState.procedureState == 4) {
-                rtn = calculatorState.operandB
-            } else if (calculatorState.procedureState == 5) {
-                switch (calculatorState.operator) {
-                    case "+":
-                        rtn = (+calculatorState.operandA) + (+calculatorState.operandB)
-                        recole1.escape_effect(() => {
-                            calculatorState.operandA = rtn
-                            calculatorState.operandB = 0
-                            calculatorState.procedureState = 2
-                        })
-                        break;
-                    case "-":
-                        rtn = (+calculatorState.operandA) - (+calculatorState.operandB)
-                        recole1.escape_effect(() => {
-                            calculatorState.operandA = rtn
-                            calculatorState.operandB = 0
-                            calculatorState.procedureState = 2
-                        })
-                        break;
-                    case "x":
-                        rtn = (+calculatorState.operandA) * (+calculatorState.operandB)
-                        recole1.escape_effect(() => {
-                            calculatorState.operandA = rtn
-                            calculatorState.operandB = 0
-                            calculatorState.procedureState = 2
-                        })
-                        break;
-                    case "/":
-                        rtn = (+calculatorState.operandA) / (+calculatorState.operandB)
-                        recole1.escape_effect(() => {
-                            calculatorState.operandA = rtn
-                            calculatorState.operandB = 0
-                            calculatorState.procedureState = 2
-                        })
-                        break;
-                    case "%":
-                        rtn = (+calculatorState.operandA) % (+calculatorState.operandB)
-                        recole1.escape_effect(() => {
-                            calculatorState.operandA = rtn
-                            calculatorState.operandB = 0
-                            calculatorState.procedureState = 2
-                        })
-                        break;
+            //demo test case 1:  calculator demo 
+            let calculatorState = recole1.createReactive({
+                operandA: null,
+                operandB: null,
+                operator: null,
+                procedureState: 0
+            })
+            let screenStr = recole1.computed(() => {
+                console.log(calculatorState.procedureState)
+                let rtn = ""
+                if (calculatorState.procedureState == 0) {// expecting operandA
+                    rtn = calculatorState.operandA
+                } else if (calculatorState.procedureState == 1) { // expecting operandA floating number
+                    rtn = calculatorState.operandA
+                } else if (calculatorState.procedureState == 2) { // expecting operandB
+                    rtn = calculatorState.operandA
+                } else if (calculatorState.procedureState == 3) { // expecting operandA floating number
+                    rtn = calculatorState.operandA
+                } else if (calculatorState.procedureState == 4) {
+                    rtn = calculatorState.operandB
+                } else if (calculatorState.procedureState == 5) {
+                    switch (calculatorState.operator) {
+                        case "+":
+                            rtn = (+calculatorState.operandA) + (+calculatorState.operandB)
+                            recole1.escape_effect(() => {
+                                calculatorState.operandA = rtn
+                                calculatorState.operandB = 0
+                                calculatorState.procedureState = 2
+                            })
+                            break;
+                        case "-":
+                            rtn = (+calculatorState.operandA) - (+calculatorState.operandB)
+                            recole1.escape_effect(() => {
+                                calculatorState.operandA = rtn
+                                calculatorState.operandB = 0
+                                calculatorState.procedureState = 2
+                            })
+                            break;
+                        case "x":
+                            rtn = (+calculatorState.operandA) * (+calculatorState.operandB)
+                            recole1.escape_effect(() => {
+                                calculatorState.operandA = rtn
+                                calculatorState.operandB = 0
+                                calculatorState.procedureState = 2
+                            })
+                            break;
+                        case "/":
+                            rtn = (+calculatorState.operandA) / (+calculatorState.operandB)
+                            recole1.escape_effect(() => {
+                                calculatorState.operandA = rtn
+                                calculatorState.operandB = 0
+                                calculatorState.procedureState = 2
+                            })
+                            break;
+                        case "%":
+                            rtn = (+calculatorState.operandA) % (+calculatorState.operandB)
+                            recole1.escape_effect(() => {
+                                calculatorState.operandA = rtn
+                                calculatorState.operandB = 0
+                                calculatorState.procedureState = 2
+                            })
+                            break;
+                    }
                 }
-            }
-            return rtn
-        })
-        recole1.watch(screenStr, () => {
-            document.querySelector("#screen").innerHTML = screenStr.value
-        })
-        document.querySelectorAll(".calculator .number").forEach((el) => {
-            el.addEventListener("click", () => {
+                return rtn
+            })
+            recole1.watch(screenStr, () => {
+                document.querySelector("#screen").innerHTML = screenStr.value
+            })
+            document.querySelectorAll(".calculator .number").forEach((el) => {
+                el.addEventListener("click", () => {
+                    if (calculatorState.procedureState == 0) {
+                        let _operandA = recole1.escape_effect(calculatorState.operandA)
+                        _operandA = _operandA?_operandA:0
+                        calculatorState.operandA = +(_operandA + el.dataset.value)
+                    } else if (calculatorState.procedureState == 1) {
+                        calculatorState.operandA = calculatorState.operandA.toString() + el.dataset.value
+                    } else if (calculatorState.procedureState == 2) {
+                        let _operandB = recole1.escape_effect(calculatorState.operandB)
+                        _operandB = _operandB?_operandB:0
+                        calculatorState.operandB = +(_operandB + el.dataset.value)
+                        calculatorState.procedureState = 4
+                    } else if (calculatorState.procedureState == 3) {
+                        calculatorState.operandB = calculatorState.operandB.toString() + el.dataset.value
+                    }else{
+                        calculatorState.operandB = el.dataset.value
+                    }
+                })
+            })
+            document.querySelectorAll(".calculator .operator").forEach((el) => {
+                el.addEventListener("click", () => {
+                    if (calculatorState.procedureState == 0 || calculatorState.procedureState == 1) {
+                        if(calculatorState.operandA){
+                            calculatorState.procedureState = 2
+                        }
+                        calculatorState.operator = el.dataset.value
+                    }
+                    else {
+                        calculatorState.operator = el.dataset.value
+                    }
+                })
+            })
+            document.querySelector(".calculator .equal").addEventListener("click", (el) => {
+                calculatorState.procedureState = 5
+            })
+            document.querySelector(".calculator .dot").addEventListener("click", (el) => {
                 if (calculatorState.procedureState == 0) {
-                    calculatorState.operandA = +(recole1.escape_effect(calculatorState.operandA) + el.dataset.value)
-                } else if (calculatorState.procedureState == 1) {
-                    calculatorState.operandA = calculatorState.operandA.toString() + el.dataset.value
+                    calculatorState.operandA = calculatorState.operandA.toString() + "."
+                    calculatorState.procedureState += 1
                 } else if (calculatorState.procedureState == 2) {
-                    calculatorState.operandB = +(recole1.escape_effect(calculatorState.operandB) + el.dataset.value)
-                    calculatorState.procedureState = 4
-                } else if (calculatorState.procedureState == 3) {
-                    calculatorState.operandB = calculatorState.operandB.toString() + el.dataset.value
+                    calculatorState.operandB = calculatorState.operandB.toString() + "."
+                    calculatorState.procedureState += 1
                 }
             })
-        })
-        document.querySelectorAll(".calculator .operator").forEach((el) => {
-            el.addEventListener("click", () => {
-                if (calculatorState.procedureState == 0 || calculatorState.procedureState == 1) {
-                    calculatorState.procedureState = 2
-                    calculatorState.operator = el.dataset.value
-                } else if (calculatorState.procedureState == 2) {
-                    calculatorState.operator = el.dataset.value
-                }
+            document.querySelector(".calculator .reset").addEventListener("click", (el) => {
+                calculatorState.operandA = null
+                calculatorState.operandB = null
+                calculatorState.procedureState = 0
             })
-        })
-        document.querySelector(".calculator .equal").addEventListener("click", (el) => {
-            calculatorState.procedureState = 5
-        })
-        document.querySelector(".calculator .dot").addEventListener("click", (el) => {
-            if (calculatorState.procedureState == 0) {
-                calculatorState.operandA = calculatorState.operandA.toString() + "."
-                calculatorState.procedureState += 1
-            } else if (calculatorState.procedureState == 2) {
-                calculatorState.operandB = calculatorState.operandB.toString() + "."
-                calculatorState.procedureState += 1
-            }
-        })
-        document.querySelector(".calculator .reset").addEventListener("click", (el) => {
-            calculatorState.operandA = 0
-            calculatorState.operandB = 0
-            calculatorState.procedureState = 0
-        })
         </code>
         </pre>
     </div>
@@ -1193,8 +1202,8 @@
 
         //demo test case 1:  calculator demo 
         let calculatorState = recole1.createReactive({
-            operandA: 0,
-            operandB: 0,
+            operandA: null,
+            operandB: null,
             operator: null,
             procedureState: 0
         })
@@ -1263,23 +1272,32 @@
         document.querySelectorAll(".calculator .number").forEach((el) => {
             el.addEventListener("click", () => {
                 if (calculatorState.procedureState == 0) {
-                    calculatorState.operandA = +(recole1.escape_effect(calculatorState.operandA) + el.dataset.value)
+                    let _operandA = recole1.escape_effect(calculatorState.operandA)
+                    _operandA = _operandA?_operandA:0
+                    calculatorState.operandA = +(_operandA + el.dataset.value)
                 } else if (calculatorState.procedureState == 1) {
                     calculatorState.operandA = calculatorState.operandA.toString() + el.dataset.value
                 } else if (calculatorState.procedureState == 2) {
-                    calculatorState.operandB = +(recole1.escape_effect(calculatorState.operandB) + el.dataset.value)
+                    let _operandB = recole1.escape_effect(calculatorState.operandB)
+                    _operandB = _operandB?_operandB:0
+                    calculatorState.operandB = +(_operandB + el.dataset.value)
                     calculatorState.procedureState = 4
                 } else if (calculatorState.procedureState == 3) {
                     calculatorState.operandB = calculatorState.operandB.toString() + el.dataset.value
+                }else{
+                    calculatorState.operandB = el.dataset.value
                 }
             })
         })
         document.querySelectorAll(".calculator .operator").forEach((el) => {
             el.addEventListener("click", () => {
                 if (calculatorState.procedureState == 0 || calculatorState.procedureState == 1) {
-                    calculatorState.procedureState = 2
+                    if(calculatorState.operandA){
+                        calculatorState.procedureState = 2
+                    }
                     calculatorState.operator = el.dataset.value
-                } else if (calculatorState.procedureState == 2) {
+                }
+                else {
                     calculatorState.operator = el.dataset.value
                 }
             })
@@ -1297,8 +1315,8 @@
             }
         })
         document.querySelector(".calculator .reset").addEventListener("click", (el) => {
-            calculatorState.operandA = 0
-            calculatorState.operandB = 0
+            calculatorState.operandA = null
+            calculatorState.operandB = null
             calculatorState.procedureState = 0
         })
 

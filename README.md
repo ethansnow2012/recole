@@ -1,5 +1,5 @@
 # recole.js
->  Recole.js is a "reactivity" programming library for Javascript. We focus on the "state" first, then we focus on the "effects". The way of programming is inspired by Vue/composition API where people use reactive state as default. Recole.js helps people write pure javascript with only reactive states.
+>  Recole.js is a reactive programming paradigm library for Javascript. It focuses on the "state first, logic second" approach for programming. This is inspired by Vue/composition API where it uses reactive state as default. Recole.js helps people write javascript with only(or mostly) reactive states.
 ## Quickstart
 - Via CDN: 
     ```

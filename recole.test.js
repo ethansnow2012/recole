@@ -97,6 +97,7 @@ test("test case 9: Array init test 2",()=>{
 })
 test("test case 10: ref in ref",()=>{
     let tc10_obj1 = {inner: recole1.ref(1)}
+    let tc10_obj2 = {inner: recole1.ref(2)}
     let tc10_block1 = recole1.ref(tc10_obj1)
     tempStr = "111"
     tempStr2 = "222"
@@ -109,6 +110,8 @@ test("test case 10: ref in ref",()=>{
     tc10_block1.value.inner.value = 10 // this should invoke the watch above
     expect(tempStr).not.toBe("tc11: watch1")
     expect(tempStr2).toBe("tc11: watch2")
+    tc10_block1.value = tc10_obj2
+    expect(tempStr).toBe("tc11: watch1")
 })
 test("test case 11: ref in ref in one declaration",()=>{
     let tc11_obj = recole1.ref({ inner:recole1.ref("hi") })
@@ -136,25 +139,25 @@ test("test case 12: prototype.cancel",()=>{
 
 // puppeteer test
 
-test('Validating all fields', async () => {
-    let browser = await puppeteer.launch({
-        headless: false, // The browser is visible
-        ignoreHTTPSErrors: true,
-        defaultViewport: null
-    })
-    let page = await browser.newPage()
-    // await page.setViewport({
-    //     width: puppeteer.devices.width,
-    //     height: puppeteer.devices.height
-    // });
-    await page.goto("file://"+path.resolve(__dirname, './example/index.html'))
-    console.log("------------------")
+// test('Validating all fields', async () => {
+//     let browser = await puppeteer.launch({
+//         headless: false, // The browser is visible
+//         ignoreHTTPSErrors: true,
+//         defaultViewport: null
+//     })
+//     let page = await browser.newPage()
+//     // await page.setViewport({
+//     //     width: puppeteer.devices.width,
+//     //     height: puppeteer.devices.height
+//     // });
+//     await page.goto("file://"+path.resolve(__dirname, './example/index.html'))
+//     console.log("------------------")
 
-    await new Promise((resolve)=>{
-        setTimeout(() => {
-            resolve()
-        }, 1000000);
-    })
+//     await new Promise((resolve)=>{
+//         setTimeout(() => {
+//             resolve()
+//         }, 1000000);
+//     })
     
-    await browser.close();
-}, 1000000)
+//     await browser.close();
+// }, 1000000)
