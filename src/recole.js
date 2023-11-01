@@ -1,15 +1,17 @@
 'use strict';
+/*
+* 被proxy代理的物件，在被set時將effect記錄於中心化的追蹤名單裡(weakmap)；在被get時依序觸發(trigger)所有相應的effect
+*/
 
 var recole = function () {
     this.symbol_reactive = Symbol();
     this._beforeMap = new WeakMap();
-    //this.effMap = new WeakMap();
     this.proxyMap = new WeakMap();
     this.targetMap = new WeakMap(); // storing objects of type "object" not "proxy"
     this.currentEffect = null;
     console.log("init");
 };
-recole.prototype.addBefore = function (target, before) {
+recole.prototype.addBefore = function (target, before) { //設定trigger時要提前被執行的effect
     let set = this._beforeMap.get(target);// return object of type "Set"
     if (!set) {
         this._beforeMap.set(target, (set = new Set()));
@@ -21,31 +23,29 @@ recole.prototype.track = function (target, key, options = {}) {
     target = this._2targetObj(target);
 
     if (this.currentEffect) {
-        let depsMap = this.targetMap.get(target); // Get the current depsMap for this target
-        if (!depsMap) {
-            // There is no map.
-            this.targetMap.set(target, (depsMap = new Map())); // Crecolee one
+        let depsMap = this.targetMap.get(target); 
+        if (!depsMap) { // 先確立reactive object有被記錄在targetMap裡
+            this.targetMap.set(target, (depsMap = new Map())); 
         }
+        // 再依據reactive object底下的key抓到相應的effect set
         let dep = depsMap.get(key); // Get the current dependencies (effects) that need to be run when this is set
-        if (!dep) {
-            // There is no dependencies (effects)
-            depsMap.set(key, (dep = new Set())); // Crecolee a new Set
+        if (!dep) { // 確立這個key也有相應的effect set
+            depsMap.set(key, (dep = new Set()));
         }
         if (options.before) {
             this.addBefore(target, options.before);
         }
-        //this.effMap.set(this.currentEffect, this.currentEffect)
         dep.add(this.currentEffect);
     }
 };
-recole.prototype.cancel = function (target) {
+recole.prototype.cancel = function (target) { // 移除對特定的reactive物件的追蹤
     target = this._2targetObj(target);
     this._beforeMap.delete(target);
     this.targetMap.delete(target);
 
 };
 
-recole.prototype.trigger_before = function (target, key) {
+recole.prototype.trigger_before = function (target, key) { // 先不要理這個
     target = this._2targetObj(target);
     //==
     let beforeSet = this._beforeMap.get(target);
@@ -55,15 +55,15 @@ recole.prototype.trigger_before = function (target, key) {
         });
     }
 };
-recole.prototype.trigger = function (target, key) {
+recole.prototype.trigger = function (target, key) { // 處發所有被追蹤的trigger
     if (this.escape_effect_flag) { return }
     target = this._2targetObj(target);
     //==
-    const depsMap = this.targetMap.get(target); // Does this object have any properties that have dependencies (effects)
+    const depsMap = this.targetMap.get(target); // 先由object指過去
     if (!depsMap) {
         return
     }
-    let dep = depsMap.get(key); // If there are dependencies (effects) associated with this
+    let dep = depsMap.get(key); // 再由key指過去，就可以抓到所有effect了
     if (dep) {
         dep.forEach((eff) => {
             // run them all
@@ -78,7 +78,7 @@ recole.prototype.createReactive = function (target, _relation_obj = null, _cache
     let cache_obj = _cache_obj
     const handler = {
 
-        get(target, key, receiver) {
+        get(target, key, receiver) { // 當reactive的值在this.effect裡被取用時，呼叫track函數將當下的effect塞到
             let result = Reflect.get(target, key, receiver);
             _this.track(target, key); // If this reactive property (target) is GET inside then track the effect to rerun on SET
             return result
@@ -127,13 +127,13 @@ recole.prototype.createReactive = function (target, _relation_obj = null, _cache
     this.proxyMap.set(_proxy, target);
     return _proxy
 };
-recole.prototype.effect = function (eff) {
+recole.prototype.effect = function (eff) { // 只有在effect裡宣告的函示會在proxy handler裡被啟動追蹤
     this.currentEffect = eff; // must be a function
     this.currentEffect();
     this.currentEffect = null;
     return eff
 };
-recole.prototype.escape_effect = function (aa) {
+recole.prototype.escape_effect = function (aa) { // 先不要理他
     let rtn
     this.escape_effect_flag = true;
     if (typeof aa == "function") {
@@ -144,7 +144,7 @@ recole.prototype.escape_effect = function (aa) {
     this.escape_effect_flag = null;
     return rtn
 }
-recole.prototype.ref = function (init_value = 0, _relation_obj = null, _cache_obj = null) {
+recole.prototype.ref = function (init_value = 0, _relation_obj = null, _cache_obj = null) { // 先不要理他，目前好像只用在computed裡
     let _this = this;
     let raw = init_value;
     let raw_old = init_value;
@@ -195,9 +195,7 @@ recole.prototype.computed = function (getter) {
     this.effect(() => (result.value = getter()));
     return result
 };
-recole.prototype.watch = function (target, eff, before, options = {}) {
-    //let _this = this
-
+recole.prototype.watch = function (target, eff, before, options = {}) { // 就跟vue的watch一樣，可以用來取代this.effect
     this.currentEffect = eff;
     if (options["first_effect"] == true) {
         eff();
@@ -210,7 +208,7 @@ recole.prototype.watch = function (target, eff, before, options = {}) {
 
     this.currentEffect = null;
 };
-recole.prototype._2targetObj = function (target) {
+recole.prototype._2targetObj = function (target) { //拿到原始的object
     return this.proxyMap.get(target) ? this.proxyMap.get(target) : target
 };
 
